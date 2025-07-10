@@ -3,7 +3,7 @@ import record from "./record.js";
 import { CONFIG } from "./config.js";
 import button from "./button.js";
 
-let regexValidated = false;
+chrome.storage.session.set({ regexValidated: false });
 let lastValidatedTitle = "";
 
 async function shouldRecord() {
@@ -12,6 +12,8 @@ async function shouldRecord() {
 }
 
 async function validateTitle(tab) {
+  let regexValidated = await chrome.storage.session.get("regexValidated");
+
   if (!tab.title || tab.title === lastValidatedTitle) return;
 
   console.log("[validateTitle] tab.title =", tab.title);
@@ -20,13 +22,15 @@ async function validateTitle(tab) {
   const isValid = record.isTitleValid(tab.title);
   console.log("VALIDAÇÃO REGEX =>", isValid);
 
-  if (isValid && !regexValidated) {
-    regexValidated = true;
+  console.log("[regexValidated] =", regexValidated.regexValidated);
+
+  if (isValid && regexValidated.regexValidated === false) {
+    await chrome.storage.session.set({ regexValidated: true });
     await chrome.storage.session.set({ shouldMonitor: true });
     await chrome.storage.session.set({ entrypoint: tab.id }); //âncora da extensão
     console.log("Regex válida, ativando monitoramento");
     await chrome.storage.session.set({ recording: true }); //atualiza recording
-    console.log("GRAVAÇÃO INICIADA")
+    console.log("GRAVAÇÃO INICIADA");
   }
 }
 
@@ -46,18 +50,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   //busca tab e valida REGEX
-  console.log("[onActivate] VALIDANDO REGEX")
+  console.log("[onActivate] VALIDANDO REGEX");
   const tab = await chrome.tabs.get(activeInfo.tabId);
-  await validateTitle(tab)
+  await validateTitle(tab);
 
   // verifica se prossegue com base na validação anterior
-  let flagMonitor = await chrome.storage.session.get(["shouldMonitor"])
-  if(!flagMonitor)return;
+  let flagMonitor = await chrome.storage.session.get(["shouldMonitor"]);
+  if (!flagMonitor) return;
 
   if (!(await shouldRecord())) return;
 
   const lecture = await chrome.storage.session.get(["lectureLink"]);
-  // const tab = await chrome.tabs.get(activeInfo.tabId);
   const student = await record.retrieveUser();
 
   if (tab.url && !tab.url.startsWith(lecture)) {
@@ -80,13 +83,13 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") {
-    console.log("[onUpdated] VALIDANDO REGEX")
+    console.log("[onUpdated] VALIDANDO REGEX");
     // valida REGEX
-    await validateTitle(tab)
+    await validateTitle(tab);
 
     // verifica se prossegue
-    let flagMonitor = await chrome.storage.session.get(["shouldMonitor"])
-    if(!flagMonitor)return;
+    let flagMonitor = await chrome.storage.session.get(["shouldMonitor"]);
+    if (!flagMonitor) return;
     if (!(await shouldRecord())) return;
 
     const lecture = await chrome.storage.session.get(["lectureLink"]);
