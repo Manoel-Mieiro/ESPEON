@@ -65,15 +65,10 @@ function buildPayload(tab, target, eventType, user) {
 }
 
 async function startLecture(tab, lecture) {
-  // const { lectureLink } = await chrome.storage.session.get(["lectureLink"]);
-  // const [tab] = await getTab();
-
   chrome.runtime.sendMessage({
     type: "console",
     message: "Redirecionando para o link da reunião: " + lecture,
   });
-  await chrome.storage.session.set({lectureLink: lecture})
-
 
   chrome.tabs.update(tab.id, { url: lecture });
 }
