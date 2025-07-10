@@ -1,6 +1,5 @@
 import record from "./record.js";
 import button from "./button.js";
-
 document.addEventListener("DOMContentLoaded", async () => {
   const btn = document.getElementById("start");
   const exit = document.getElementById("exit");
@@ -11,21 +10,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const hasState = await chrome.storage.session.get(["recording"]);
+  const lecture = document.getElementById("lecture_link");
+
   if (hasState.recording === undefined) {
     await chrome.storage.session.set({ recording: false });
   }
 
-  // atualiza view do botão no reload
-  await button.updateButton(btn);
+  // cuida do estilo condicional do botão ao sofrer load
+  await button.handleMeetingInput(btn, lecture);
+
 
   btn.addEventListener("click", async () => {
-    const state = await chrome.storage.session.get(["recording"]);
-    const isRecording = state.recording === true;
-
     const [tab] = await record.getTab();
-    const lecture = document.getElementById("lecture_link").value;
-
-    if (!lecture) {
+    if (!lecture.value && btn.id === "start") {
       chrome.runtime.sendMessage({
         type: "console",
         message: "ERRO: o link da reunião está vazio.",
@@ -33,7 +30,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       alert("Por favor, insira o Link da reunião");
       return;
     } else {
-      await record.startLecture(tab, lecture);
+      if(btn.id === "start"){
+        await chrome.storage.session.set({ lectureLink: lecture.value });
+        await record.startLecture(tab, lecture.value);
+      } 
+      else{
+        await chrome.storage.session.remove(["lectureLink"]);
+        await chrome.storage.session.remove(["recording"]);
+        await chrome.storage.session.set({ regexValidated: false });
+      }
+      await button.handleMeetingInput(btn, lecture);
     }
   });
 
