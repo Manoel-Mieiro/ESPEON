@@ -64,4 +64,26 @@ function buildPayload(tab, target, eventType, user) {
   };
 }
 
-export default { stopRecording, recordTabs, buildPayload, retrieveUser };
+async function startLecture(tab, lecture) {
+  chrome.runtime.sendMessage({
+    type: "console",
+    message: "Redirecionando para o link da reunião: " + lecture,
+  });
+
+  chrome.tabs.update(tab.id, { url: lecture });
+}
+
+function isTitleValid(title) {
+  const regex = /^\[[^\]]+\]/;
+  return regex.test(title);
+}
+
+export default {
+  stopRecording,
+  recordTabs,
+  buildPayload,
+  retrieveUser,
+  startLecture,
+  getTab,
+  isTitleValid,
+};
