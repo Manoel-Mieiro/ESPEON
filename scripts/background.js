@@ -20,7 +20,7 @@ async function validateTitle(tab) {
     tab.title === lastValidatedTitle ||
     regexValidated.regexValidated ||
     !meeting
-  )
+  ) 
     return;
 
   console.log("[validateTitle] tab.title =", tab.title);
