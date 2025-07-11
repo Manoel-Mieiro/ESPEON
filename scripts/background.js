@@ -13,8 +13,15 @@ async function shouldRecord() {
 
 async function validateTitle(tab) {
   let regexValidated = await chrome.storage.session.get("regexValidated");
+  let meeting = await chrome.storage.session.get(["lectureLink"]);
 
-  if (!tab.title || tab.title === lastValidatedTitle) return;
+  if (
+    !tab.title ||
+    tab.title === lastValidatedTitle ||
+    regexValidated.regexValidated ||
+    !meeting
+  )
+    return;
 
   console.log("[validateTitle] tab.title =", tab.title);
   lastValidatedTitle = tab.title;
