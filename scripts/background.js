@@ -70,10 +70,9 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   const lecture = await chrome.storage.session.get(["lectureLink"]);
   const expectedTab = await chrome.storage.session.get(["entrypoint"]);
   const student = await record.retrieveUser();
-  console.log("[TAB.ID] = ", tab.id)
-  console.log("[ENTYPOINT.ID] = ", expectedTab)
-  // if (tab.url && !tab.url.startsWith(lecture)) {
-    if (tab.id !== expectedTab.entrypoint) {
+  console.log("[TAB.ID] = ", tab.id);
+  console.log("[ENTYPOINT.ID] = ", expectedTab);
+  if (tab.id !== expectedTab.entrypoint) {
     console.log(`[onActivated] ${student} left Microsoft Teams tab`);
 
     const payload = record.buildPayload(
@@ -104,8 +103,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     const lecture = await chrome.storage.session.get(["lectureLink"]);
     const student = await record.retrieveUser();
-
-    if (tab.url && !tab.url.startsWith(lecture)) {
+    const expectedTab = await chrome.storage.session.get(["entrypoint"]);
+    console.log("[TAB.ID] = ", tab.id);
+    console.log("[ENTYPOINT.ID] = ", expectedTab);
+    if (tab.id !== expectedTab.entrypoint) {
       console.log(`[onUpdated] ${student} left Microsoft Teams tab`);
 
       const payload = record.buildPayload(
