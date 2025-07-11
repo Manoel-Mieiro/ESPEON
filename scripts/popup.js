@@ -35,9 +35,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         await record.startLecture(tab, lecture.value);
       } 
       else{
-        await chrome.storage.session.remove(["lectureLink"]);
-        await chrome.storage.session.remove(["recording"]);
-        await chrome.storage.session.set({ regexValidated: false });
+        chrome.storage.session.remove(["lectureLink"]);
+        chrome.storage.session.remove(["recording"]);
+        chrome.storage.session.remove(["shouldMonitor"]);
+        chrome.storage.session.set({ regexValidated: false });
       }
       await button.handleMeetingInput(btn, lecture);
     }
