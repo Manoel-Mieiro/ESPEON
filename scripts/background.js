@@ -14,14 +14,14 @@ async function shouldRecord() {
 async function validateTitle(tab) {
   let regexValidated = await chrome.storage.session.get("regexValidated");
   let meeting = await chrome.storage.session.get(["lectureLink"]);
-
   if (
     !tab.title ||
     tab.title === lastValidatedTitle ||
     regexValidated.regexValidated ||
-    !meeting
-  ) 
+    (meeting && Object.keys(meeting).length === 0)
+  ) {
     return;
+  }
 
   console.log("[validateTitle] tab.title =", tab.title);
   lastValidatedTitle = tab.title;
@@ -68,9 +68,12 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   if (!(await shouldRecord())) return;
 
   const lecture = await chrome.storage.session.get(["lectureLink"]);
+  const expectedTab = await chrome.storage.session.get(["entrypoint"]);
   const student = await record.retrieveUser();
-
-  if (tab.url && !tab.url.startsWith(lecture)) {
+  console.log("[TAB.ID] = ", tab.id)
+  console.log("[ENTYPOINT.ID] = ", expectedTab)
+  // if (tab.url && !tab.url.startsWith(lecture)) {
+    if (tab.id !== expectedTab.entrypoint) {
     console.log(`[onActivated] ${student} left Microsoft Teams tab`);
 
     const payload = record.buildPayload(
