@@ -81,6 +81,12 @@ body {
   justify-content: center;
 }
 
+.form_header {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
 .form_body,
 .register_form,
 .form_login_main,
@@ -125,7 +131,7 @@ body {
   margin: 10px;
 }
 
-.description button{
+.description button {
   width: 40%;
 }
 
@@ -146,6 +152,11 @@ body {
   background-color: var(--espeon-purple-light);
   padding: 10px;
   border-radius: 5px;
+}
+
+#form_login label {
+  font-size: 20px;
+  letter-spacing: 2px;
 }
 
 #form_lecture {
@@ -209,7 +220,7 @@ body {
 }
 
 #stop {
-  background-color: var(--espeon-blue );
+  background-color: var(--espeon-blue);
   color: white;
   font-weight: bold;
   padding: 10px;
