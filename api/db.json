@@ -1,0 +1,66 @@
+[
+  {
+    "database": "SUBJECT",
+    "collections": [
+      "fundamentos_de_administracao",
+      "estrategia_empresarial",
+      "arquitetura_de_computadores",
+      "algoritmo_estruturado",
+      "logica_computacional",
+      "fundamentos_matematica",
+      "banco_de_dados",
+      "nocoes_de_direito_e_cidadania",
+      "linguagem_e_tecnicas_de_prog_i",
+      "calculo_diferencial_e_integral",
+      "sistemas_operacionais",
+      "programacao_orientada_a_objetos",
+      "algoritmos_e_estruturas_de_dados_i",
+      "algebra_linear",
+      "banco_de_dados_ii",
+      "fund_de_redes_de_computadores",
+      "administracao_de_redes",
+      "probabilidade_e_estatistica",
+      "leitura_e_producao_de_textos_academicos",
+      "algoritmos_e_estruturas_de_dados_ii",
+      "analise_e_modelagem_de_sistemas",
+      "engenharia_de_software",
+      "inteligencia_artificial",
+      "ingles_para_fins_academicos",
+      "seguranca_da_informacao",
+      "programacao_web",
+      "sistemas_embarcados_ii",
+      "administracao_de_banco_de_dados",
+      "redes_industriais",
+      "administracao_de_empresas",
+      "gestao_de_projeto_de_software",
+      "desenvolvimento_de_aplicativos",
+      "sistemas_especialistas",
+      "topicos_avancados_em_novas_tecnologias",
+      "auditoria_de_sistemas_de_informacao",
+      "projeto_integrador_de_sistemas",
+      "projeto_final_i",
+      "projeto_final_ii",
+      "interacao_humano_computador",
+      "ensino_de_prog_baseada_em_jogos",
+      "projetos_aplicados_em_pesquisa_de_computacao",
+      "libras_i",
+      "ingles_tecnico_ii",
+      "engenharia_economico_financeira",
+      "phyton",
+      "laboratorio_de_eletronica_ii",
+      "qualidade_de_software"
+    ]
+  },
+  {
+    "database": "STUDENT",
+    "collections": []
+  },
+  {
+    "database": "CLASSESS",
+    "collections": []
+  },
+  {
+    "database": "TRACES",
+    "collections": ["login", "users"]
+  }
+]
