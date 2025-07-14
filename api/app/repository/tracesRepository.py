@@ -1,7 +1,9 @@
 from bson import ObjectId
-from db import collection as traces
+from db import client
 from app.models.traces import Traces
 
+db = client["TRACES"]
+traces = db["dummy2"]
 
 def findAllTraces():
     try:

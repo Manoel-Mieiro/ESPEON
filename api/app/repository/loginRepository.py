@@ -1,7 +1,9 @@
 from bson import ObjectId
-from db import loginCollection as login
+from db import client
 from app.models.login import Login
 
+db = client["TRACES"]
+login = db["login"]
 
 def seedLogin(usr, token):
     try:
