@@ -1,8 +1,9 @@
 from bson import ObjectId
-from db import lecturesCollection as lectures
+from db import client
 from app.models.lecture import Lecture
-from db import lecturesCollection as lectures
 
+db = client["TRACES"]
+lectures = db["lectures"]
 
 def findAllLectures():
     try:

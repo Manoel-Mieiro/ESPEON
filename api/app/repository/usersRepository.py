@@ -1,8 +1,10 @@
 from bson import ObjectId
-from db import usersCollection as users
+from db import client
 from app.models.users import Users
-from db import loginCollection as login
 
+db = client["TRACES"]
+users = db["users"]
+login = db["login"]
 
 def findAllUsers():
     try:
