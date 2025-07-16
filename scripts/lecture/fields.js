@@ -1,3 +1,5 @@
+const lecturesEndpoint = "http://localhost:8183/lectures2";
+
 export function fillTeacher() {
   chrome.storage.session.get("user", (result) => {
     const teacher = result.user;
@@ -8,6 +10,31 @@ export function fillTeacher() {
 
     document.getElementById("teacher").value = teacher;
   });
+}
+
+async function fetchSubjects() {
+  try {
+    const response = await fetch(lecturesEndpoint);
+    if (!response.ok) throw new Error("API may be unavaliable");
+    return response;
+  } catch (error) {
+    chrome.runtime.sendMessage({
+      type: "console",
+      message: `[fetchSubjects] Falha ao extrair: ${error}`,
+    });
+  }
+}
+
+export async function fillSubjects(selector) {
+  const response = await fetchSubjects();
+  if (!response) return;
+  const subjectList = await response.json();
+  for (let s = 0; s < subjectList.length; s++) {
+    var opt = document.createElement("option");
+    opt.value = subjectList[s];
+    opt.innerHTML = subjectList[s];
+    selector.appendChild(opt);
+  }
 }
 
 export function getFormData() {
