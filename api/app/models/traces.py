@@ -5,6 +5,7 @@ class Traces:
     def __init__(
         self,
         onlineClass: str,
+        classTitle: str,
         user: str,
         url: str,
         title: str,
@@ -20,6 +21,7 @@ class Traces:
     ):
         self._id = _id
         self.onlineClass = onlineClass
+        self.classTitle = classTitle
         self.user = user
         self.url = url
         self.title = title
@@ -35,6 +37,7 @@ class Traces:
     def to_dict(self):
         data = {
             "onlineClass": self.onlineClass,
+            "classTitle":  self.classTitle,
             "user": self.user,
             "url": self.url,
             "title": self.title,
@@ -55,6 +58,7 @@ class Traces:
     def from_dict(data):
         return Traces(
             onlineClass=data["onlineClass"],
+            classTitle=data["classTitle"],
             user=data["user"],
             url=data["url"],
             title=data["title"],
