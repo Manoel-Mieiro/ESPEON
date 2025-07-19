@@ -2,10 +2,11 @@ from bson import ObjectId
 from db import client
 from app.models.traces import Traces
 
-db = client["TRACES"]
-traces = db["dummy2"]
+db = client["SUBJECT"]
+
 
 def findAllTraces():
+    traces = db["administracao_de_banco_de_dados"]
     try:
         docs = list(traces.find({}))
         trace_list = []
@@ -21,7 +22,8 @@ def findAllTraces():
         raise e
 
 
-def createTrace(data: Traces):
+def createTrace(data: Traces, collection):
+    traces = db[collection]
     try:
         print("\n[REPOSITORY]Criando trace:", data, "\n")
         result = traces.insert_one(data.to_dict())
