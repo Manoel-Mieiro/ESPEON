@@ -5,8 +5,8 @@ from app.models.traces import Traces
 db = client["SUBJECT"]
 
 
-def findAllTraces():
-    traces = db["administracao_de_banco_de_dados"]
+def findAllTraces(subject):
+    traces = db[subject]
     try:
         docs = list(traces.find({}))
         trace_list = []
