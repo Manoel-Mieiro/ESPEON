@@ -8,10 +8,13 @@ def builReport(subject):
     except Exception as e:
         raise e
 
+def countDistinct(arr):
+    distinct = set(arr)
+    return len(distinct)
 
 def assembleData():
-    countLecutre = ""
-    countStudents = ""
+    countLecutre = countLecture()
+    countStudents = countStudents()
     totalTimeWatched = ""
     avgLectureDuration = ""
     avgIdleDuration = ""
@@ -21,8 +24,8 @@ def assembleData():
     avgCamStreamingSpan = ""
     avgMicStreamingSpan = ""
     return {
-        "countLecutre": "self.countLecutre",
-        "countStudents": "self.countLecutre",
+        "countLecutre": countLecutre,
+        "countStudents": countStudents,
         "totalTimeWatched": "self.countLecutre",
         "avgLectureDuration": "self.countLecutre",
         "avgIdleDuration": "self.countLecutre",
@@ -34,4 +37,9 @@ def assembleData():
     }
 
 def countLecture():
-    data = raw.extractField("countLecutre")
+    data = raw.extractField("classTitle")
+    return countDistinct(data)
+
+def countStudents():
+    data = raw.extractField("user")
+    return countDistinct(data)
