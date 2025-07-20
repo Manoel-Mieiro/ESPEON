@@ -7,6 +7,7 @@ def findAllTraces(subject):
     try:
         url = f"http://localhost:8183/traces/{subject}"
         response = requests.get(url)
+        print(f"Response para {subject}: {response}")
         return response
     except Exception as e:
         raise Exception(

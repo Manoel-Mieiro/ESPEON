@@ -4,7 +4,7 @@ import app.services.reports.raw as raw
 def builReport(subject):
     try:
         data = raw.findAllTraces(subject)
-        return assembleData()
+        return assembleData(data)
     except Exception as e:
         raise e
 
@@ -14,17 +14,17 @@ def countDistinct(arr):
     return len(distinct)
 
 
-def assembleData():
-    countLecutre = countLecture()
-    countStudents = countStudents()
-    totalTimeWatched = totalTimeWatched()
-    avgLectureDuration = avgLectureDuration()
-    avgIdleDuration = avgIdleDuration()
-    avgAttentionSpan = avgAttentionSpan()
-    pctEnabledCamera = boolPercentage("cameraEnabled")
-    pctEnabledMic = boolPercentage("microphoneEnabled")
-    avgCamStreamingSpan = boolPercentage("cameraStreaming")
-    avgMicStreamingSpan = boolPercentage("microphoneStreaming")
+def assembleData(logs):
+    countLecutre = count_lecture(logs)
+    countStudents = count_students(logs)
+    totalTimeWatched = total_time_watched(logs)
+    avgLectureDuration = avg_lecture_duration(logs)
+    avgIdleDuration = avg_idle_duration(logs)
+    avgAttentionSpan = avg_attention_span(logs)
+    pctEnabledCamera = boolPercentage(logs, "cameraEnabled")
+    pctEnabledMic = boolPercentage(logs, "microphoneEnabled")
+    avgCamStreamingSpan = boolPercentage(logs, "cameraStreaming")
+    avgMicStreamingSpan = boolPercentage(logs, "microphoneStreaming")
     return {
         "countLecutre": countLecutre,
         "countStudents": countStudents,
@@ -39,33 +39,36 @@ def assembleData():
     }
 
 
-def countLecture():
-    data = raw.extractField("classTitle")
+def count_lecture(logs):
+    data = raw.extractField(logs, "classTitle")
     return countDistinct(data)
 
 
-def countStudents():
-    data = raw.extractField("user")
+def count_students(logs):
+    data = raw.extractField(logs, "user")
     return countDistinct(data)
 
 
-def totalTimeWatched():
+def total_time_watched(logs):
     return 0  # por enquanto vou retornar 0
 
 
-def avgLectureDuration():
+def avg_lecture_duration(logs):
     return 1  # por enquanto vou retornar 1
 
 
-def avgIdleDuration():
+def avg_idle_duration(logs):
     return 1  # por enquanto vou retornar 1
 
 
-def avgAttentionSpan():
+def avg_attention_span(logs):
     return 0  # por enquanto vou retornar 0
 
 
-def boolPercentage(field):
-    data = raw.extractField(field)
+def boolPercentage(logs, field):
+    data = raw.extractField(logs, field)
     occurences = data.count("yes")
-    return occurences/len(data)
+    total = 1
+    if len(data) > 0:
+        total = len(data)
+    return occurences/total

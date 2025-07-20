@@ -8,9 +8,9 @@ def listReports(kind):
         raise e
 
 
-def createReports(data, kind):
+def createReports(kind, subject):
     try:
-        return reportService.createReport(data, kind)
+        return reportService.createReport(kind, subject)
     except Exception as e:
         print("[CONTROLLER]Error creating report:", e)
         raise e

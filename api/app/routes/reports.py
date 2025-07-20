@@ -19,16 +19,13 @@ def listReports(kind):
         return jsonify({"error": f"[ROUTES] {str(e)}"}), 500
 
 
-@reports_bp.route("/reports<kind>", methods=["POST"])
-def createReport(kind):
+@reports_bp.route("/reports/<kind>/<subject>", methods=["GET"])
+def createReport(kind, subject):
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "Dados inválidos"}), 400
         if kind not in kinds:
             return jsonify("Page not Found"), 404
 
-        new_trace = reportController.createReports(data, kind)
-        return jsonify(new_trace), 201
+        report = reportController.createReports(kind, subject)
+        return jsonify(report), 201
     except Exception as e:
         return jsonify({"[ROUTES]error": str(e)}), 500

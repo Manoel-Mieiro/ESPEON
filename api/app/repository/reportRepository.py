@@ -26,13 +26,14 @@ def createReport(data: Reports, kind):
     reports = db[kind]
     try:
         print("\n[REPOSITORY]Criando report:", data, "\n")
-        result = reports.insert_one(data.to_dict())
-        data._id = result.inserted_id
+        reportInstance = Reports(**data)
+        result = reports.insert_one(reportInstance.to_dict())
+        reportInstance._id = result.inserted_id
 
-        if not data._id:
+        if not reportInstance._id:
             raise Exception("Erro ao inserir report no banco.")
 
-        return data.to_dict()
+        return reportInstance.to_dict()
     except Exception as e:
         print("[REPOSITORY]Erro ao criar report:", e)
         raise e
