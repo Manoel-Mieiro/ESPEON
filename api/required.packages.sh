@@ -6,6 +6,8 @@ python -m pip install pymongo
 
 # optional
 pip install python-dotenv
+pip install requests
+
 
 # on ubuntu
 #python3 -m pip install --user Flask
