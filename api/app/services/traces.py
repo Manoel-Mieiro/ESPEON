@@ -2,9 +2,9 @@ import app.repository.tracesRepository as repository
 
 collection = None
 
-def findAllTraces():
+def findAllTraces(subject):
     try:
-        return repository.findAllTraces()
+        return repository.findAllTraces(subject)
     except Exception as e:
         print("[SERVICE]Erro ao buscar traces:", e)
         raise e
