@@ -4,10 +4,10 @@ import app.controllers.traces as traceController
 traces_bp = Blueprint("traces", __name__)
 
 
-@traces_bp.route("/traces", methods=["GET"])
-def listTraces():
+@traces_bp.route("/traces/<subject>", methods=["GET"])
+def listTraces(subject):
     try:
-        traces = traceController.listTraces()
+        traces = traceController.listTraces(subject)
         if traces:
             return jsonify(traces), 200
         else:
