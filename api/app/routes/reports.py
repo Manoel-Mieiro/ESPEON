@@ -22,9 +22,6 @@ def listReports(kind):
 @reports_bp.route("/reports/<kind>/<subject>", methods=["GET"])
 def createReport(kind, subject):
     try:
-        if kind not in kinds:
-            return jsonify("Page not Found"), 404
-
         report = reportController.createReports(kind, subject)
         return jsonify(report), 201
     except Exception as e:
