@@ -15,7 +15,7 @@ def countDistinct(arr):
 def assembleData():
     countLecutre = countLecture()
     countStudents = countStudents()
-    totalTimeWatched = ""
+    totalTimeWatched = totalTimeWatched()
     avgLectureDuration = ""
     avgIdleDuration = ""
     avgAttentionSpan = ""
@@ -26,7 +26,7 @@ def assembleData():
     return {
         "countLecutre": countLecutre,
         "countStudents": countStudents,
-        "totalTimeWatched": "self.countLecutre",
+        "totalTimeWatched": totalTimeWatched,
         "avgLectureDuration": "self.countLecutre",
         "avgIdleDuration": "self.countLecutre",
         "avgAttentionSpan": "self.countLecutre",
@@ -43,3 +43,7 @@ def countLecture():
 def countStudents():
     data = raw.extractField("user")
     return countDistinct(data)
+
+def totalTimeWatched():
+    return 0 # por enquanto vou retornar 0
+
