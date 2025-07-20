@@ -2,9 +2,9 @@ import app.services.traces as traceService
 from app.dto.traces import TracesDTO
 
 
-def listTraces():
+def listTraces(subject):
     try:
-        return traceService.findAllTraces()
+        return traceService.findAllTraces(subject)
     except Exception as e:
         print("[CONTROLLER]Error fetching traces:", e)
         raise e

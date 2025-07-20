@@ -69,15 +69,22 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 
   const lecture = await chrome.storage.session.get(["lectureLink"]);
   const expectedTab = await chrome.storage.session.get(["entrypoint"]);
+  const title = await chrome.tabs.get(expectedTab.entrypoint);
+  const subject = record.extractSubject(title.title);
+  const endpoint = record.standardizeSubject(subject);
   const student = await record.retrieveUser();
   console.log("[TAB.ID] = ", tab.id);
   console.log("[ENTYPOINT.ID] = ", expectedTab);
+  console.log("[SUBJECT] = ", subject);
+  console.log("[ENDPOINT] = ", endpoint);
+
   if (tab.id !== expectedTab.entrypoint) {
     console.log(`[onActivated] ${student} left Microsoft Teams tab`);
 
     const payload = record.buildPayload(
       tab,
       lecture.lectureLink,
+      title.title,
       "onActivated",
       student
     );
@@ -104,14 +111,19 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const lecture = await chrome.storage.session.get(["lectureLink"]);
     const student = await record.retrieveUser();
     const expectedTab = await chrome.storage.session.get(["entrypoint"]);
+    const title = await chrome.tabs.get(expectedTab.entrypoint);
+
     console.log("[TAB.ID] = ", tab.id);
     console.log("[ENTYPOINT.ID] = ", expectedTab);
+    console.log("[TITLE] = ", title.title);
+
     if (tab.id !== expectedTab.entrypoint) {
       console.log(`[onUpdated] ${student} left Microsoft Teams tab`);
 
       const payload = record.buildPayload(
         tab,
         lecture.lectureLink,
+        title.title,
         "onUpdated",
         student
       );

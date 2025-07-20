@@ -1,9 +1,10 @@
 import app.repository.tracesRepository as repository
 
+collection = None
 
-def findAllTraces():
+def findAllTraces(subject):
     try:
-        return repository.findAllTraces()
+        return repository.findAllTraces(subject)
     except Exception as e:
         print("[SERVICE]Erro ao buscar traces:", e)
         raise e
@@ -11,11 +12,21 @@ def findAllTraces():
 
 def createTrace(data):
     try:
+        print("[SERVICE]Definindo Collection...")
+        collection = extractSubject(data.classTitle)
+        print("[SERVICE]Collection: ", collection)
         print("[SERVICE]Criando trace:", data)
-        return repository.createTrace(data)
+        return repository.createTrace(data, collection)
     except Exception as e:
         print("[SERVICE]Erro ao criar trace:", e)
         raise e
+
+
+def extractSubject(subject):
+    end = subject.index(']')
+    substring = subject[1:end]
+    return substring.lower().replace(" ", '_')
+
 
 # def convertObjectIdToString(json):
 #     try:

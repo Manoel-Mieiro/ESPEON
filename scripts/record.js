@@ -47,9 +47,10 @@ async function getTab() {
   return await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 }
 
-function buildPayload(tab, target, eventType, user) {
+function buildPayload(tab, target, classTitle, eventType, user) {
   return {
     onlineClass: target,
+    classTitle: classTitle,
     user: user,
     url: tab.url,
     title: tab.title,
@@ -78,6 +79,15 @@ function isTitleValid(title) {
   return regex.test(title);
 }
 
+function extractSubject(title){
+  const lastCharIndex = title.indexOf(']')
+  return title.substring(1, lastCharIndex)
+}
+
+function standardizeSubject(subject){
+  return subject.toLowerCase().replace(" ", `_`)
+}
+
 export default {
   stopRecording,
   recordTabs,
@@ -86,4 +96,6 @@ export default {
   startLecture,
   getTab,
   isTitleValid,
+  extractSubject,
+  standardizeSubject
 };

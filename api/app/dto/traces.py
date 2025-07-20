@@ -6,6 +6,7 @@ class TracesDTO:
     def __init__(
         self,
         onlineClass: str,
+        classTitle: str,
         user: str,
         url: str,
         title: str,
@@ -19,6 +20,7 @@ class TracesDTO:
         event: str,
     ):
         self.onlineClass = onlineClass
+        self.classTitle = classTitle
         self.user = user
         self.url = url
         self.title = title
@@ -34,6 +36,7 @@ class TracesDTO:
     def to_standard(self):
         return Traces(
             onlineClass=self.onlineClass,
+            classTitle=self.classTitle,
             user=self.user,
             url=self.url,
             title=self.title,
