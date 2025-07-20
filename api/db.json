@@ -61,6 +61,17 @@
   },
   {
     "database": "TRACES",
-    "collections": ["login", "users"]
+    "collections": [
+      "login",
+      "users"
+    ]
+  },
+  {
+    "database": "REPORTS",
+    "collections": [
+      "subject",
+      "lecture",
+      "student"
+    ]
   }
 ]
