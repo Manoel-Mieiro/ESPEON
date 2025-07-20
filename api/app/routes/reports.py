@@ -3,10 +3,13 @@ import app.controllers.reports as reportController
 
 reports_bp = Blueprint("reports", __name__)
 
+kinds = ["student", "lecture", "subject"]
 
 @reports_bp.route("/reports/<kind>", methods=["GET"])
 def listReports(kind):
     try:
+        if kind not in kinds:
+            return jsonify("Page not Found"), 404
         reports = reportController.listReports(kind)
         if reports:
             return jsonify(reports), 200
@@ -22,6 +25,8 @@ def createReport(kind):
         data = request.get_json()
         if not data:
             return jsonify({"error": "Dados inválidos"}), 400
+        if kind not in kinds:
+            return jsonify("Page not Found"), 404
 
         new_trace = reportController.createReports(data, kind)
         return jsonify(new_trace), 201
