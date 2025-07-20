@@ -11,7 +11,7 @@ def findAllReports(kind):
         raise e
 
 
-def createReport(subject, kind):
+def createReport(kind, subject):
     try:
         print(f"[SERVICE]Criando report para {subject}. \nRelatório de {kind}")
         report = builReport(subject)
