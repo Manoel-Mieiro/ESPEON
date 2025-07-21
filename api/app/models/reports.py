@@ -4,6 +4,7 @@ from bson import ObjectId
 class Reports:
     def __init__(
         self,
+        subject: str,
         countLecutre: int,
         countStudents: int,
         totalTimeWatched: float,
@@ -14,9 +15,11 @@ class Reports:
         pctEnabledMic: float,
         avgCamStreamingSpan: float,
         avgMicStreamingSpan: float,
+        issuedAt: float,
         _id: ObjectId = None
     ):
         self._id = _id
+        self.subject = subject
         self.countLecutre = countLecutre
         self.countStudents = countStudents
         self.totalTimeWatched = totalTimeWatched
@@ -27,9 +30,11 @@ class Reports:
         self.pctEnabledMic = pctEnabledMic
         self.avgCamStreamingSpan = avgCamStreamingSpan
         self.avgMicStreamingSpan = avgMicStreamingSpan
+        self.issuedAt = issuedAt
 
     def to_dict(self):
         data = {
+            "subject": self.subject,
             "countLecutre": self.countLecutre,
             "countStudents": self.countStudents,
             "totalTimeWatched": self.totalTimeWatched,
@@ -40,6 +45,7 @@ class Reports:
             "pctEnabledMic": self.pctEnabledMic,
             "avgCamStreamingSpan": self.avgCamStreamingSpan,
             "avgMicStreamingSpan": self.avgMicStreamingSpan,
+            "issuedAt": self.issuedAt,
         }
         if self._id:
             data["_id"] = str(self._id)
@@ -48,6 +54,7 @@ class Reports:
     @staticmethod
     def from_dict(data):
         return Reports(
+            subject=data["subject"],
             countLecutre=data["countLecutre"],
             countStudents=data["countStudents"],
             totalTimeWatched=data["totalTimeWatched"],
@@ -58,5 +65,6 @@ class Reports:
             pctEnabledMic=data["pctEnabledMic"],
             avgCamStreamingSpan=data["avgCamStreamingSpan"],
             avgMicStreamingSpan=data["avgMicStreamingSpan"],
+            issuedAt=data["issuedAt"],
             _id=data.get("_id")
         )
