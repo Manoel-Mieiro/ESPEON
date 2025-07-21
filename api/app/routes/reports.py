@@ -19,7 +19,7 @@ def listReports(kind):
         return jsonify({"error": f"[ROUTES] {str(e)}"}), 500
 
 
-@reports_bp.route("/reports/<kind>/<subject>", methods=["GET"])
+@reports_bp.route("/reports/<kind>/<subject>", methods=["POST"])
 def createReport(kind, subject):
     try:
         report = reportController.createReports(kind, subject)
