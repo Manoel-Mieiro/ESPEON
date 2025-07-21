@@ -1,10 +1,11 @@
 import app.services.reports.raw as raw
+import datetime
 
 
 def builReport(subject):
     try:
         data = raw.findAllTraces(subject)
-        return assembleData(data)
+        return assembleData(data, subject)
     except Exception as e:
         raise e
 
@@ -14,7 +15,8 @@ def countDistinct(arr):
     return len(distinct)
 
 
-def assembleData(logs):
+def assembleData(logs, subject):
+    subject = subject
     countLecutre = count_lecture(logs)
     countStudents = count_students(logs)
     totalTimeWatched = total_time_watched(logs)
@@ -25,7 +27,9 @@ def assembleData(logs):
     pctEnabledMic = boolPercentage(logs, "microphoneEnabled")
     avgCamStreamingSpan = boolPercentage(logs, "cameraStreaming")
     avgMicStreamingSpan = boolPercentage(logs, "microphoneStreaming")
+    issuedAt = issueDate()
     return {
+        "subject": subject,
         "countLecutre": countLecutre,
         "countStudents": countStudents,
         "totalTimeWatched": totalTimeWatched,
@@ -36,8 +40,8 @@ def assembleData(logs):
         "pctEnabledMic": pctEnabledMic,
         "avgCamStreamingSpan": avgCamStreamingSpan,
         "avgMicStreamingSpan": avgMicStreamingSpan,
+        "issuedAt": issuedAt,
     }
-
 
 def count_lecture(logs):
     data = raw.extractField(logs, "classTitle")
@@ -63,6 +67,13 @@ def avg_idle_duration(logs):
 
 def avg_attention_span(logs):
     return 0  # por enquanto vou retornar 0
+
+
+def issueDate():
+    now = datetime.datetime.now()
+    date = now.strftime("%c")
+    print(f"Current date is: {date}")
+    return date
 
 
 def boolPercentage(logs, field):
