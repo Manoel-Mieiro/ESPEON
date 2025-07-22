@@ -19,10 +19,12 @@ def listReports(kind):
         return jsonify({"error": f"[ROUTES] {str(e)}"}), 500
 
 
-@reports_bp.route("/reports/<kind>/<subject>", methods=["POST"])
-def createReport(kind, subject):
+@reports_bp.route("/reports/<kind>", methods=["POST"])
+def createReport(kind):
+    subject = request.args.get("subject")
+    lecture = request.args.get("lecture")
     try:
-        report = reportController.createReports(kind, subject)
+        report = reportController.createReports(kind, subject, lecture)
         return jsonify(report), 201
     except Exception as e:
         return jsonify({"[ROUTES]error": str(e)}), 500
