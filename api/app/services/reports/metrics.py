@@ -2,10 +2,13 @@ import app.services.reports.raw as raw
 import datetime
 
 
-def builReport(subject):
+def builReport(subject=None, lecture=None):
     try:
-        data = raw.findAllTraces(subject)
-        return assembleData(data, subject)
+        if subject:
+            data = raw.findAllTraces(subject)
+        elif lecture:
+            data = raw.findLecture(lecture)
+        return assembleData(data, subject, lecture)
     except Exception as e:
         raise e
 
@@ -15,9 +18,9 @@ def countDistinct(arr):
     return len(distinct)
 
 
-def assembleData(logs, subject):
-    subject = subject
-    countLecutre = count_lecture(logs)
+def assembleData(logs, subject=None, lectureId=None):
+    subject =  get_subject(logs, subject, lectureId)
+    countLecutre = count_lecture(logs) if not lectureId else None
     countStudents = count_students(logs)
     totalTimeWatched = total_time_watched(logs)
     avgLectureDuration = avg_lecture_duration(logs)
@@ -27,9 +30,11 @@ def assembleData(logs, subject):
     pctEnabledMic = boolPercentage(logs, "microphoneEnabled")
     avgCamStreamingSpan = boolPercentage(logs, "cameraStreaming")
     avgMicStreamingSpan = boolPercentage(logs, "microphoneStreaming")
+    lecture = get_lecture(lectureId) if lectureId else None
     issuedAt = issueDate()
     return {
         "subject": subject,
+        "lecture": lecture,
         "countLecutre": countLecutre,
         "countStudents": countStudents,
         "totalTimeWatched": totalTimeWatched,
@@ -43,8 +48,21 @@ def assembleData(logs, subject):
         "issuedAt": issuedAt,
     }
 
+def get_subject(logs, subject=None, lectureId=None):
+    if lectureId:
+        data = raw.extractField(logs, "subject")
+        return data
+    else:
+        return subject
+    
+def get_lecture(lectureId):
+    data = raw.findLecture(lectureId)
+    lecture = raw.extractField(data, "_id")
+    return lecture
+
 def count_lecture(logs):
     data = raw.extractField(logs, "classTitle")
+    print(type(data))
     return countDistinct(data)
 
 
