@@ -5,7 +5,6 @@ class Reports:
     def __init__(
         self,
         subject: str,
-        countLecutre: int,
         countStudents: int,
         totalTimeWatched: float,
         avgLectureDuration: float,
@@ -16,9 +15,12 @@ class Reports:
         avgCamStreamingSpan: float,
         avgMicStreamingSpan: float,
         issuedAt: float,
-        _id: ObjectId = None
+        _id: ObjectId = None,
+        countLecutre: int = None,
+        lecture: str = None
     ):
         self._id = _id
+        self.lecture = lecture
         self.subject = subject
         self.countLecutre = countLecutre
         self.countStudents = countStudents
@@ -35,7 +37,6 @@ class Reports:
     def to_dict(self):
         data = {
             "subject": self.subject,
-            "countLecutre": self.countLecutre,
             "countStudents": self.countStudents,
             "totalTimeWatched": self.totalTimeWatched,
             "avgLectureDuration": self.avgLectureDuration,
@@ -49,13 +50,16 @@ class Reports:
         }
         if self._id:
             data["_id"] = str(self._id)
+        if self.lecture:
+            data["lecture"] = self.lecture
+        if self.countLecutre:
+            data["countLecutre"] = self.countLecutre
         return data
 
     @staticmethod
     def from_dict(data):
         return Reports(
             subject=data["subject"],
-            countLecutre=data["countLecutre"],
             countStudents=data["countStudents"],
             totalTimeWatched=data["totalTimeWatched"],
             avgLectureDuration=data["avgLectureDuration"],
@@ -66,5 +70,7 @@ class Reports:
             avgCamStreamingSpan=data["avgCamStreamingSpan"],
             avgMicStreamingSpan=data["avgMicStreamingSpan"],
             issuedAt=data["issuedAt"],
-            _id=data.get("_id")
+            _id=data.get("_id"),
+            lecture=data.get("lecture"),
+            countLecutre=data.get("countLecture"),
         )
