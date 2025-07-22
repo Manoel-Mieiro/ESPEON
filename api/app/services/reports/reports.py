@@ -3,6 +3,7 @@ from app.services.reports.metrics import builReport
 
 collection = None
 
+
 def findAllReports(kind):
     try:
         return repository.findAllReports(kind)
@@ -11,10 +12,12 @@ def findAllReports(kind):
         raise e
 
 
-def createReport(kind, subject):
+def createReport(kind, subject=None, lecture=None):
     try:
-        print(f"[SERVICE]Criando report para {subject}. \nRelatório de {kind}")
-        report = builReport(subject)
+        print(f"Subject = {subject}")
+        print(f"Lecture = {lecture}")
+        print(f"[SERVICE]Criando report para. \nRelatório de {kind}")
+        report = builReport(subject, lecture)
         return repository.createReport(report, kind)
     except Exception as e:
         print("[SERVICE]Erro ao criar report:", e)
