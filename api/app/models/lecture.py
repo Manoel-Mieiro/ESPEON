@@ -30,4 +30,5 @@ class Lecture():
             period_start=data["period_start"],
             period_end=data["period_end"],
             teacher=data["teacher"],
+            _id=data.get("_id"),
         )
