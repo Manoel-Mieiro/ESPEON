@@ -72,8 +72,24 @@ def count_students(logs):
 
 
 def total_time_watched(logs):
-    return 0  # por enquanto vou retornar 0
+    data = raw.extractField(logs, "classTitle")
+    period = extract_period(data)
+    total = calculate_class_duration(period)
+    return total
 
+def extract_period(str):
+    startIndex = (str.index(",")) + 2
+    endIndex = str.index(":", str.index("-", startIndex))
+    substring = str[startIndex : endIndex]
+    start, end = substring.split("-")
+    return {"start": start, "end": end}
+
+def calculate_class_duration(period):
+    start_hour, start_minute = map(int, period["start"].split(":"))
+    end_hour, end_minute = map(int, period["end"].split(":"))
+
+    total_minutes = (end_hour * 60 + end_minute) - (start_hour * 60 + start_minute)
+    return total_minutes / 60
 
 def avg_lecture_duration(logs):
     return 1  # por enquanto vou retornar 1
