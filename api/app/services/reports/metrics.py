@@ -23,7 +23,7 @@ def assembleData(logs, subject=None, lectureId=None):
     countLecutre = count_lecture(logs) if not lectureId else None
     countStudents = count_students(logs)
     totalTimeWatched = total_time_watched(logs)
-    avgLectureDuration = avg_lecture_duration(logs)
+    avgLectureDuration = avg_lecture_duration(logs) if not lectureId else None
     avgIdleDuration = avg_idle_duration(logs)
     avgAttentionSpan = avg_attention_span(logs)
     pctEnabledCamera = boolPercentage(logs, "cameraEnabled")
