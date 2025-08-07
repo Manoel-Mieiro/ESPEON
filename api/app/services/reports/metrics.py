@@ -19,7 +19,7 @@ def countDistinct(arr):
 
 
 def assembleData(logs, subject=None, lectureId=None):
-    subject =  get_subject(logs, subject, lectureId)
+    subject = get_subject(logs, subject, lectureId)
     countLecutre = count_lecture(logs) if not lectureId else None
     countStudents = count_students(logs)
     totalTimeWatched = total_time_watched(logs)
@@ -48,17 +48,20 @@ def assembleData(logs, subject=None, lectureId=None):
         "issuedAt": issuedAt,
     }
 
+
 def get_subject(logs, subject=None, lectureId=None):
     if lectureId:
         data = raw.extractField(logs, "subject")
         return data
     else:
         return subject
-    
+
+
 def get_lecture(lectureId):
     data = raw.findLecture(lectureId)
     lecture = raw.extractField(data, "_id")
     return lecture
+
 
 def count_lecture(logs):
     data = raw.extractField(logs, "classTitle")
@@ -72,24 +75,20 @@ def count_students(logs):
 
 
 def total_time_watched(logs):
-    data = raw.extractField(logs, "classTitle")
-    period = extract_period(data)
-    total = calculate_class_duration(period)
+    total = calculate_class_duration(logs)
+    print(f"[total_time_watched] total is ", total)
     return total
 
-def extract_period(str):
-    startIndex = (str.index(",")) + 2
-    endIndex = str.index(":", str.index("-", startIndex))
-    substring = str[startIndex : endIndex]
-    start, end = substring.split("-")
-    return {"start": start, "end": end}
 
 def calculate_class_duration(period):
-    start_hour, start_minute = map(int, period["start"].split(":"))
-    end_hour, end_minute = map(int, period["end"].split(":"))
+    start_hour, start_minute = map(int, period["period_start"].split(":"))
+    end_hour, end_minute = map(int, period["period_end"].split(":"))
 
-    total_minutes = (end_hour * 60 + end_minute) - (start_hour * 60 + start_minute)
-    return total_minutes / 60
+    print(f"start_hour = {start_hour} | end_hour = {end_hour}")
+    total_minutes = (end_hour * 60 + end_minute) - \
+        (start_hour * 60 + start_minute)
+    return round((total_minutes / 60), 2)
+
 
 def avg_lecture_duration(logs):
     return 1  # por enquanto vou retornar 1
