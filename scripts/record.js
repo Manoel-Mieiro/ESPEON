@@ -88,6 +88,11 @@ function standardizeSubject(subject){
   return subject.toLowerCase().replace(" ", `_`)
 }
 
+function cleanTitle(title) {
+  return title.replace(/\s+\|\s+Microsoft Teams$/, "");
+}
+
+
 export default {
   stopRecording,
   recordTabs,
@@ -97,5 +102,6 @@ export default {
   getTab,
   isTitleValid,
   extractSubject,
-  standardizeSubject
+  standardizeSubject,
+  cleanTitle
 };
