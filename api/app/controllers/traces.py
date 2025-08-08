@@ -10,6 +10,14 @@ def listTraces(subject):
         raise e
 
 
+def listTracesWithinLecture(subject, lecture):
+    try:
+        return traceService.findAllTracesWithinLecture(subject, lecture)
+    except Exception as e:
+        print(f"[CONTROLLER]Error fetching for lecture {lecture}:", e)
+        raise e
+
+
 def createTrace(data):
     try:
         print("\n[CONTROLLER]Payload recebido:", data)
