@@ -84,7 +84,7 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     const payload = record.buildPayload(
       tab,
       lecture.lectureLink,
-      title.title,
+      record.cleanTitle(title.title),
       "onActivated",
       student
     );
@@ -123,7 +123,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       const payload = record.buildPayload(
         tab,
         lecture.lectureLink,
-        title.title,
+        record.cleanTitle(title.title),
         "onUpdated",
         student
       );
