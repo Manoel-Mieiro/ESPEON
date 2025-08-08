@@ -6,8 +6,13 @@ traces_bp = Blueprint("traces", __name__)
 
 @traces_bp.route("/traces/<subject>", methods=["GET"])
 def listTraces(subject):
+    lecture = request.args.get("lecture")
     try:
-        traces = traceController.listTraces(subject)
+        if lecture:
+            traces = traceController.listTracesWithinLecture(subject, lecture)
+        else:
+            traces = traceController.listTraces(subject)
+
         if traces:
             return jsonify(traces), 200
         else:
