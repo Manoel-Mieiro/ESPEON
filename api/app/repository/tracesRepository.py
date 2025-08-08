@@ -22,6 +22,24 @@ def findAllTraces(subject):
         raise e
 
 
+def findAllTracesWithinLecture(subject, lecture):
+    traces = db[subject]
+    query = {"classTitle": lecture}
+
+    try:
+        docs = list(traces.find(query))
+        trace_list = []
+
+        for doc in docs:
+            trace = Traces.from_dict(doc)
+            trace_list.append(trace.to_dict())
+        return trace_list
+
+    except Exception as e:
+        print("[REPOSITORY]Erro ao buscar traces:", e)
+        raise e
+
+
 def createTrace(data: Traces, collection):
     traces = db[collection]
     try:
