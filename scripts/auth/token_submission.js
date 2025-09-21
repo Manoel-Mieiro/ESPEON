@@ -11,7 +11,7 @@ export function submitToken(component, document) {
     try {
       const response = await api.callAPI(
         "GET",
-        `${CONFIG.API_BASE_URL}${CONFIG.LOGIN_ENDPOINT}?usr=${email}&token=${token}`
+        `${CONFIG.API_BASE_URL}${CONFIG.LOGIN_ENDPOINT}?email=${email}&token=${token}`
       );
       handleResponse(response, email);
     } catch (error) {
