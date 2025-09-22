@@ -48,12 +48,15 @@ function formatSubjectName(name) {
 
 
 export function getFormData() {
+  const subjectSelect = document.getElementById("subject");
+  const teacherSelect = document.getElementById("teacher");
+
   const formData = {
-    subject: document.getElementById("subject").value,
+    subject_id: subjectSelect.value,      // UUID do subject
+    teacher_id: teacherSelect.value,      // UUID do teacher
     date_lecture: document.getElementById("date_lecture").value,
     period_start: document.getElementById("period_start").value,
     period_end: document.getElementById("period_end").value,
-    teacher: document.getElementById("teacher").value,
   };
 
   chrome.runtime.sendMessage({
