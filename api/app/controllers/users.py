@@ -1,5 +1,5 @@
-import app.services.users as userService
-from app.dto.users import UserDTO
+import app.services.postgres.users as userService
+from app.dto.postgres.users import UserDTO
 
 
 def findAllUsers():
