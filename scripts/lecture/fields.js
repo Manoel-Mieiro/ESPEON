@@ -29,14 +29,23 @@ async function fetchSubjects() {
 export async function fillSubjects(selector) {
   const response = await fetchSubjects();
   if (!response) return;
+
   const subjectList = await response.json();
+
   for (let s = 0; s < subjectList.length; s++) {
-    var opt = document.createElement("option");
-    opt.value = subjectList[s];
-    opt.innerHTML = subjectList[s];
+    const subject = subjectList[s]; 
+    const opt = document.createElement("option");
+    opt.value = subject.subject_id; 
+    opt.innerHTML = formatSubjectName(subject.name); 
     selector.appendChild(opt);
   }
 }
+
+function formatSubjectName(name) {
+  if (!name) return "";
+  return name.replace(/_/g, " ").toUpperCase();
+}
+
 
 export function getFormData() {
   const formData = {
