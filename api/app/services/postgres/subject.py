@@ -1,17 +1,22 @@
 import app.repository.postgres.subjectRepository as subjects
+from app.models.postgres.subject import Subject
+
 
 def findAllSubjects():
     try:
-        return subjects.findAllSubjects()
+        all_subjects = subjects.findAllSubjects()
+        return [s.to_dict() for s in all_subjects]
     except Exception as e:
         print("[SERVICE] Error fetching subjects:", e)
         raise e
+
 
 def findOneSubject(subject_id=None):
     try:
         if not subject_id:
             raise Exception("subject_id é obrigatório!")
-        return subjects.findOneSubject(subject_id)
+        subject = subjects.findOneSubject(subject_id)
+        return subject.to_dict() if subject else None
     except Exception as e:
         print("[SERVICE] Error fetching subject:", e)
         raise e
@@ -19,10 +24,11 @@ def findOneSubject(subject_id=None):
 
 def createSubject(name):
     try:
-        all_subjects = findAllSubjects()
-        if any(s[1] == name for s in all_subjects):
+        all_subjects = subjects.findAllSubjects()
+        if any(s.name == name for s in all_subjects):
             raise Exception("Matéria já existe!")
-        return subjects.createSubject(name)
+        new_subject = subjects.createSubject(name)
+        return new_subject.to_dict()
     except Exception as e:
         print("[SERVICE] Error creating subject:", e)
         raise e
@@ -30,13 +36,14 @@ def createSubject(name):
 
 def updateSubject(subject_id, new_name):
     try:
-        all_subjects = findAllSubjects()
-        if any(s[1] == new_name for s in all_subjects if s[0] != subject_id):
+        all_subjects = subjects.findAllSubjects()
+        if any(s.name == new_name and s.subject_id != subject_id for s in all_subjects):
             raise Exception("Já existe uma matéria com esse nome!")
         return subjects.updateSubject(subject_id, new_name)
     except Exception as e:
         print("[SERVICE] Error updating subject:", e)
         raise e
+
 
 def deleteSubject(subject_id):
     try:
