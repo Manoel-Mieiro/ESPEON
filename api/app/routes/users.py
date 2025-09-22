@@ -1,3 +1,55 @@
+# from flask import jsonify, Blueprint, request
+# import app.controllers.users as userController
+
+# users_bp = Blueprint("users", __name__)
+
+
+# @users_bp.route("/users", methods=["GET"])
+# def findAllUsers():
+#     try:
+#         return jsonify(userController.findAllUsers()), 200
+#     except Exception as e:
+#         return jsonify({"[ROUTES]error": str(e)}), 500
+
+
+# @users_bp.route("/users", methods=["POST"])
+# def createUser():
+#     try:
+#         data = request.get_json()
+#         userController.createUser(data)
+#         return jsonify({"message": "Usuário cadastrado com sucesso"}), 201
+#     except Exception as e:
+#         return jsonify({"[ROUTES]error": str(e)}), 500
+
+
+# @users_bp.route("/users/<email>", methods=["GET"])
+# def findOneUser(email):
+#     try:
+#         user = userController.findOneUser(email)
+#         if user is None:
+#             return jsonify({"error": f"{email} não encontrado"}), 404
+#         return user
+
+#     except Exception as e:
+#         return jsonify({"[ROUTES]error": str(e)}), 500
+
+
+# @users_bp.route("/users/<email>", methods=["PUT"])
+# def updateUser(email):
+#     try:
+#         data = request.get_json()
+#         return jsonify(userController.updateUser(email, data))
+#     except Exception as e:
+#         return jsonify({"[ROUTES]error": str(e)}), 500
+
+
+# @users_bp.route("/users/<email>", methods=["DELETE"])
+# def deleleteUser(email):
+#     try:
+#         return jsonify(userController.deleteUser(email))
+#     except Exception as e:
+#         return jsonify({"[ROUTES]error": str(e)}), 500
+
 from flask import jsonify, Blueprint, request
 import app.controllers.users as userController
 
@@ -5,47 +57,46 @@ users_bp = Blueprint("users", __name__)
 
 
 @users_bp.route("/users", methods=["GET"])
-def findAllUsers():
+def get_all_users():
     try:
         return jsonify(userController.findAllUsers()), 200
     except Exception as e:
-        return jsonify({"[ROUTES]error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 @users_bp.route("/users", methods=["POST"])
-def createUser():
+def create_user():
     try:
         data = request.get_json()
         userController.createUser(data)
         return jsonify({"message": "Usuário cadastrado com sucesso"}), 201
     except Exception as e:
-        return jsonify({"[ROUTES]error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 @users_bp.route("/users/<email>", methods=["GET"])
 def findOneUser(email):
     try:
-        user = userController.findOneUser(email)
+        user = userController.findOneUser(email=email)
         if user is None:
-            return jsonify({"error": f"{email} não encontrado"}), 404
-        return user
-
+            return jsonify({"error": f"Usuário {email} não encontrado"}), 404
+        return jsonify(user)
     except Exception as e:
-        return jsonify({"[ROUTES]error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
-@users_bp.route("/users/<email>", methods=["PUT"])
-def updateUser(email):
+@users_bp.route("/users/<user_id>", methods=["PUT"])
+def update_user(user_id):
     try:
         data = request.get_json()
-        return jsonify(userController.updateUser(email, data))
+        return jsonify(userController.updateUser(user_id, data))
     except Exception as e:
-        return jsonify({"[ROUTES]error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
-@users_bp.route("/users/<email>", methods=["DELETE"])
-def deleleteUser(email):
+@users_bp.route("/users/<user_id>", methods=["DELETE"])
+def delete_user(user_id):
     try:
-        return jsonify(userController.deleteUser(email))
+        return jsonify(userController.deleteUser(user_id))
     except Exception as e:
-        return jsonify({"[ROUTES]error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
