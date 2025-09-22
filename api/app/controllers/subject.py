@@ -1,5 +1,5 @@
 import app.services.postgres.subject as subjectService
-from app.dto.postgres.subject import SubjectDTO
+
 
 def findAllSubjects():
     try:
@@ -8,6 +8,7 @@ def findAllSubjects():
         print("[CONTROLLER] Error fetching subjects:", e)
         raise e
 
+
 def findOneSubject(subject_id):
     try:
         return subjectService.findOneSubject(subject_id)
@@ -15,22 +16,28 @@ def findOneSubject(subject_id):
         print("[CONTROLLER] Error fetching subject:", e)
         raise e
 
+
 def createSubject(data):
     try:
-        subject = SubjectDTO(
-            name=data["name"]
-        )
-        return subjectService.createSubject(subject.to_standard())
+        name = data.get("name")
+        if not name:
+            raise ValueError("Campo 'name' é obrigatório")
+        return subjectService.createSubject(name)
     except Exception as e:
         print("[CONTROLLER] Error creating subject:", e)
         raise e
 
+
 def updateSubject(subject_id, updatedData):
     try:
-        return subjectService.updateSubject(subject_id, updatedData["name"])
+        new_name = updatedData.get("name")
+        if not new_name:
+            raise ValueError("Campo 'name' é obrigatório para atualização")
+        return subjectService.updateSubject(subject_id, new_name)
     except Exception as e:
         print("[CONTROLLER] Error updating subject:", e)
         raise e
+
 
 def deleteSubject(subject_id):
     try:
