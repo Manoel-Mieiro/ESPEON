@@ -27,8 +27,8 @@ def get_one_subject(subject_id):
 def create_subject():
     try:
         data = request.get_json()
-        subjectController.createSubject(data)
-        return jsonify({"message": "Matéria cadastrada com sucesso"}), 201
+        new_subject = subjectController.createSubject(data)
+        return jsonify(new_subject), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -37,7 +37,8 @@ def create_subject():
 def update_subject(subject_id):
     try:
         data = request.get_json()
-        return jsonify(subjectController.updateSubject(subject_id, data))
+        success = subjectController.updateSubject(subject_id, data)
+        return jsonify({"success": success})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -45,6 +46,7 @@ def update_subject(subject_id):
 @subjects_bp.route("/subjects/<subject_id>", methods=["DELETE"])
 def delete_subject(subject_id):
     try:
-        return jsonify(subjectController.deleteSubject(subject_id))
+        success = subjectController.deleteSubject(subject_id)
+        return jsonify({"success": success})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
