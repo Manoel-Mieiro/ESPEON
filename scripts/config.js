@@ -3,5 +3,6 @@ export const CONFIG = {
   API_ENDPOINT: "/traces",
   USERS_ENDPOINT: "/users",
   LOGIN_ENDPOINT: "/login/token",
-  LECTURES_ENDPOINT: "/lectures"
+  LECTURES_ENDPOINT: "/lectures",
+  SUBJECTS_ENDPOINT: "/subjects"
 };

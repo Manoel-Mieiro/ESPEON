@@ -1,3 +1,4 @@
+import { CONFIG } from "../config";
 const lecturesEndpoint = "http://localhost:8183/lectures2";
 
 export function fillTeacher() {
@@ -14,7 +15,7 @@ export function fillTeacher() {
 
 async function fetchSubjects() {
   try {
-    const response = await fetch(lecturesEndpoint);
+    const response = await fetch(CONFIG.SUBJECTS_ENDPOINT);
     if (!response.ok) throw new Error("API may be unavaliable");
     return response;
   } catch (error) {
