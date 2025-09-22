@@ -51,7 +51,6 @@ def getToken(user_id: str):
         print(f"[REPOSITORY] Registro encontrado: {login_dict}")
 
         return Login.from_dict(login_dict)
-        # return 1
 
     except Exception as e:
         print("[REPOSITORY] Erro inesperado no getToken:", e)
