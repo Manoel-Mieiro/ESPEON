@@ -3,13 +3,13 @@ from typing import Optional
 
 
 class Users:
-    def __init__(self, email: str, role: Roles, _id: Optional[str] = None):
+    def __init__(self, email: str, role: Roles, user_id: Optional[str] = None):
         """
         :param email: Email do usuário
         :param role: Instância de Roles (enum)
-        :param _id: UUID do usuário como string (opcional)
+        :param user_id: UUID do usuário como string (opcional)
         """
-        self._id = _id  # UUID como string
+        self.user_id = user_id  # UUID como string
         self.email = email
         self.role = role
 
@@ -24,8 +24,8 @@ class Users:
             "email": self.email,
             "role": self.role.value if isinstance(self.role, Roles) else self.role
         }
-        if self._id:
-            data["_id"] = self._id
+        if self.user_id:
+            data["user_id"] = self.user_id
         return data
 
     @staticmethod
@@ -44,5 +44,5 @@ class Users:
         return Users(
             email=data["email"],
             role=role_value,
-            _id=data.get("_id")  # Agora espera string UUID
+            user_id=data.get("user_id")  # Agora espera string UUID
         )

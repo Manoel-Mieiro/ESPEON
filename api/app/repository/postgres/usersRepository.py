@@ -1,20 +1,20 @@
 import uuid
 from app.models.roles import Roles
 from pg import conn
-from app.models.users import Users
+from app.models.postgres.users import Users
 
 cursor = conn.cursor()
 
 
 def findAllUsers():
     try:
-        cursor.execute("SELECT id, email, role FROM users;")
+        cursor.execute("SELECT user_id, email, role FROM users;")
         rows = cursor.fetchall()
         users_list = []
 
         for row in rows:
             user = Users(
-                _id=row[0],
+                user_id=row[0],
                 email=row[1],
                 role=row[2]
             )
@@ -37,12 +37,12 @@ def createUser(data: Users):
         )
         conn.commit()
 
-        data._id = user_id
+        data.user_id = user_id
 
         # Criar login
         cursor.execute(
             "INSERT INTO login (login_id, user_id, token, created_at) VALUES (%s, %s, %s, %s);",
-            (str(uuid.uuid4()), data._id, None, None)
+            (str(uuid.uuid4()), data.user_id, None, None)
         )
         conn.commit()
 
@@ -74,7 +74,7 @@ def findOneUser(user_id=None, email=None):
         role = Roles(row[2]) if isinstance(row[2], str) else row[2]
 
         user = Users(
-            _id=row[0],
+            user_id=row[0],
             email=row[1],
             role=role
         )
@@ -100,7 +100,7 @@ def updateUser(user_id: str, updatedUser: dict):
         if not row:
             raise ValueError("Usuário não encontrado.")
 
-        return Users(_id=row[0], email=row[1], role=row[2]).to_dict()
+        return Users(user_id=row[0], email=row[1], role=row[2]).to_dict()
 
     except Exception as e:
         conn.rollback()
