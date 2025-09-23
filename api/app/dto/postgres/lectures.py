@@ -1,4 +1,4 @@
-from app.models.lecture import Lecture
+from app.models.postgres.lecture import Lecture
 from datetime import datetime, date, time
 
 
