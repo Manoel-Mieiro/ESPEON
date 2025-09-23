@@ -10,7 +10,8 @@ def resolve_user_id(email: str):
     user = userController.findOneUser(email=email)
     if not user:
         return None, f"Usuário {email} não encontrado"
-    user_id = user.get("_id") if isinstance(user, dict) else getattr(user, "_id", None)
+    
+    user_id = user.get("user_id") if isinstance(user, dict) else getattr(user, "user_id", None)
     return user_id, None
 
 
@@ -18,8 +19,7 @@ def resolve_user_id(email: str):
 def patch_token():
     """Gera/atualiza o token do usuário"""
     try:
-        usr_data = request.get_json()
-        email = usr_data.get("email")
+        email = request.args.get("email") or (request.get_json(silent=True) or {}).get("email")
 
         if not email:
             return jsonify({"error": "email é obrigatório"}), 400
