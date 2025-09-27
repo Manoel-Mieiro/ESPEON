@@ -19,12 +19,13 @@ def createUser(data):
         raise e
 
 
-def findOneUser(email):
+def findOneUser(user_id=None, email=None):
     try:
-        return users.findOneUser(email)
+        return users.findOneUser(user_id=user_id, email=email)
     except Exception as e:
-        print("[SERVICE]Error fetching user:", e)
+        print("[SERVICE] Error fetching user:", e)
         raise e
+
 
 
 def updateUser(id_user, data):
