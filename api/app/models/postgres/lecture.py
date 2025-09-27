@@ -31,13 +31,13 @@ class Lecture:
         Converte a aula para dicionário para persistência ou JSON
         """
         return {
-            "lecture_id": self.lecture_id,
-            "subject_id": self.subject_id,
-            "teacher_id": self.teacher_id,
-            "date_lecture": self.date_lecture,
-            "period_start": self.period_start,
-            "period_end": self.period_end
-        }
+                "lecture_id": self.lecture_id,
+                "subject_id": self.subject_id,
+                "teacher_id": self.teacher_id,
+                "date_lecture": self.date_lecture.isoformat() if isinstance(self.date_lecture, date) else self.date_lecture,
+                "period_start": self.period_start.isoformat() if isinstance(self.period_start, time) else self.period_start,
+                "period_end": self.period_end.isoformat() if isinstance(self.period_end, time) else self.period_end
+            }
 
     @staticmethod
     def from_dict(data: dict):
@@ -48,10 +48,9 @@ class Lecture:
             lecture_id=data.get("lecture_id"),
             subject_id=data["subject_id"],
             teacher_id=data["teacher_id"],
-            date_lecture=data["date_lecture"],
-            period_start=data["period_start"],
-            period_end=data["period_end"]
+            date_lecture=date.fromisoformat(data["date_lecture"]) if isinstance(data["date_lecture"], str) else data["date_lecture"],
+            period_start=time.fromisoformat(data["period_start"]) if isinstance(data["period_start"], str) else data["period_start"],
+            period_end=time.fromisoformat(data["period_end"]) if isinstance(data["period_end"], str) else data["period_end"]
         )
-
     def __str__(self):
         return f"Lecture({self.lecture_id}): {self.subject_id} - {self.teacher_id} on {self.date_lecture}"
