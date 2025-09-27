@@ -34,7 +34,7 @@ export async function submitLecture(component) {
 
       // Atualiza a view
       handleView(clipboardData);
-      fillWithTitle(clipboardData, lectureField);
+      await fillWithTitle(clipboardData, lectureField);
       triggerViewHandling(backBtn);
 
       chrome.runtime.sendMessage({
@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.session.get(["lecture"], (result) => {
     if (result.lecture) {
       clipboardData = result.lecture;
+      console.log(`clipboardData: ${result.lecture}`)
       lectureField = document.getElementById("lecture_content");
       backBtn = document.getElementById("back_lecture");
 
