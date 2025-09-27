@@ -22,15 +22,28 @@ def create_user():
         return jsonify({"error": str(e)}), 500
 
 
-@users_bp.route("/users/<email>", methods=["GET"])
-def findOneUser(email):
+import uuid
+
+@users_bp.route("/users/<identifier>", methods=["GET"])
+def findOneUser(identifier):
     try:
-        user = userController.findOneUser(email=email)
+        user = None
+
+        try:
+            uuid_obj = uuid.UUID(identifier)
+            user = userController.findOneUser(user_id=str(uuid_obj))
+        except ValueError:
+            user = userController.findOneUser(email=identifier)
+
         if user is None:
-            return jsonify({"error": f"Usuário {email} não encontrado"}), 404
+            return jsonify({"error": f"Usuário {identifier} não encontrado"}), 404
+
         return jsonify(user)
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
 
 
 @users_bp.route("/users/<user_id>", methods=["PUT"])
