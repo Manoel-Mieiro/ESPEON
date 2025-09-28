@@ -18,7 +18,9 @@ class TracesDTO:
         lastAccessed: str,
         timestamp: str,
         event: str,
+        lectureId: str = None,
     ):
+        self.lectureId = lectureId
         self.onlineClass = onlineClass
         self.classTitle = classTitle
         self.user = user
@@ -35,6 +37,7 @@ class TracesDTO:
 
     def to_standard(self):
         return Traces(
+            lecture_id=self.lectureId,
             onlineClass=self.onlineClass,
             classTitle=self.classTitle,
             user=self.user,
