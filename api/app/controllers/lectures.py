@@ -1,52 +1,60 @@
-import app.services.lectures as lectureService
-from app.dto.lectures import LectureDTO
-
+from app.services.postgres.lectures import lectures as lectureService
+from app.dto.postgres.lectures import LectureDTO
 
 def findAllLectures():
     try:
         return lectureService.findAllLectures()
     except Exception as e:
-        print("[CONTROLLER]Error fetching lectures:", e)
+        print("[CONTROLLER] Error fetching lectures:", e)
         raise e
 
 
 def createLecture(data):
     try:
-        lec = LectureDTO(
-            subject=data["subject"],
+        lec_dto = LectureDTO(
+            subject_id=data["subject_id"],
+            teacher_id=data["teacher_id"],
             date_lecture=data["date_lecture"],
             period_start=data["period_start"],
-            period_end=data["period_end"],
-            teacher=data["teacher"],
+            period_end=data["period_end"]
         )
-        return lectureService.createLecture(lec.to_standard())
+        lecture = lec_dto.to_standard()
+        return lectureService.createLecture(lecture)
     except Exception as e:
-        print("[CONTROLLER]Error creating lecture:", e)
+        print("[CONTROLLER] Error creating lecture:", e)
         raise e
 
 
-def findOneLecture(_id):
+def findOneLecture(lecture_id):
     try:
-        fetched = lectureService.findOneLecture(_id)
+        fetched = lectureService.findOneLecture(lecture_id)
         if not fetched:
-            raise Exception(f"Lecture {_id} não encontrado")
+            raise Exception(f"Lecture {lecture_id} não encontrada")
         return fetched
     except Exception as e:
-        print("[CONTROLLER]Error fetching lecture:", e)
+        print("[CONTROLLER] Error fetching lecture:", e)
         raise e
 
 
-def updateLecture(_id, updatedLecture):
+def updateLecture(lecture_id, data):
     try:
-        return lectureService.updateLecture(_id, updatedLecture)
+        lec_dto = LectureDTO(
+            subject_id=data["subject_id"],
+            teacher_id=data["teacher_id"],
+            date_lecture=data["date_lecture"],
+            period_start=data["period_start"],
+            period_end=data["period_end"]
+        )
+        updated_lecture = lec_dto.to_standard()
+        return lectureService.updateLecture(lecture_id, updated_lecture.to_dict())
     except Exception as e:
-        print("[CONTROLLER]Error updating lecture:", e)
+        print("[CONTROLLER] Error updating lecture:", e)
         raise e
 
 
-def deleteLecture(_id):
+def deleteLecture(lecture_id):
     try:
-        return lectureService.deleteLecture(_id)
+        return lectureService.deleteLecture(lecture_id)
     except Exception as e:
-        print("[CONTROLLER]Error deleting lecture:", e)
+        print("[CONTROLLER] Error deleting lecture:", e)
         raise e

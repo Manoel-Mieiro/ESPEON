@@ -5,6 +5,6 @@ function generateTitle(lecture) {
   return JSON.stringify(title);
 }
 
-export function fillWithTitle(lecture, field) {
-  field.textContent = formatLectureString(lecture);
+export async function fillWithTitle(lecture, field) {
+  field.textContent = await formatLectureString(lecture);
 }

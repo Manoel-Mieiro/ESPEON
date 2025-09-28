@@ -1,3 +1,4 @@
+import { CONFIG } from "../config.js";
 const lecturesEndpoint = "http://localhost:8183/lectures2";
 
 export function fillTeacher() {
@@ -14,7 +15,7 @@ export function fillTeacher() {
 
 async function fetchSubjects() {
   try {
-    const response = await fetch(lecturesEndpoint);
+    const response = await fetch(`http://localhost:8183/${CONFIG.SUBJECTS_ENDPOINT}`);
     if (!response.ok) throw new Error("API may be unavaliable");
     return response;
   } catch (error) {
@@ -28,22 +29,34 @@ async function fetchSubjects() {
 export async function fillSubjects(selector) {
   const response = await fetchSubjects();
   if (!response) return;
+
   const subjectList = await response.json();
+
   for (let s = 0; s < subjectList.length; s++) {
-    var opt = document.createElement("option");
-    opt.value = subjectList[s];
-    opt.innerHTML = subjectList[s];
+    const subject = subjectList[s]; 
+    const opt = document.createElement("option");
+    opt.value = subject.subject_id; 
+    opt.innerHTML = formatSubjectName(subject.name); 
     selector.appendChild(opt);
   }
 }
 
+function formatSubjectName(name) {
+  if (!name) return "";
+  return name.replace(/_/g, " ").toUpperCase();
+}
+
+
 export function getFormData() {
+  const subjectSelect = document.getElementById("subject");
+  const teacherSelect = document.getElementById("teacher");
+
   const formData = {
-    subject: document.getElementById("subject").value,
+    subject_id: subjectSelect.value,      // UUID do subject
+    teacher_id: teacherSelect.value,      // UUID do teacher
     date_lecture: document.getElementById("date_lecture").value,
     period_start: document.getElementById("period_start").value,
     period_end: document.getElementById("period_end").value,
-    teacher: document.getElementById("teacher").value,
   };
 
   chrome.runtime.sendMessage({
@@ -53,3 +66,4 @@ export function getFormData() {
 
   return formData;
 }
+

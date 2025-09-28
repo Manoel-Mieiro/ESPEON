@@ -9,19 +9,27 @@ async function callAPI(method, server, payload) {
       body: JSON.stringify(payload),
     });
   } catch (error) {
-    console.log("Error in CallAPI:", error);
+    chrome.runtime.sendMessage({
+      type: "console",
+      message: `[callAPI] Erro ao chamar API: ${error}`,
+    });
     return null;
   }
 
   if (response && response.ok) {
     const data = await response.json();
-    console.log("API call successful:", data);
-    return data; 
+    chrome.runtime.sendMessage({
+      type: "console",
+      message: `[callAPI] Sucesso: ${JSON.stringify(data)}`,
+    });
+    return data;
   } else {
-    console.error(
-      "API call failed:",
-      response ? response.status : "No response"
-    );
+    chrome.runtime.sendMessage({
+      type: "console",
+      message: `[callAPI] Falha: ${
+        response ? response.status : "Sem resposta"
+      }`,
+    });
     return null;
   }
 }

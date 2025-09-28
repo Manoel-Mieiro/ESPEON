@@ -1,5 +1,5 @@
-import app.services.users as userService
-from app.dto.users import UserDTO
+import app.services.postgres.users as userService
+from app.dto.postgres.users import UserDTO
 
 
 def findAllUsers():
@@ -22,13 +22,12 @@ def createUser(data):
         raise e
 
 
-def findOneUser(email):
+def findOneUser(user_id=None, email=None):
     try:
-        return userService.findOneUser(email)
+        return userService.findOneUser(user_id=user_id, email=email)
     except Exception as e:
-        print("[CONTROLLER]Error fetching user:", e)
+        print("[CONTROLLER] Error fetching user:", e)
         raise e
-
 
 def updateUser(id_user, updatedUser):
     try:

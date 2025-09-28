@@ -3,6 +3,7 @@ py -3 -m venv .venv
 .venv/Scripts/activate
 pip install Flask
 python -m pip install pymongo
+pip install psycopg2-binary
 
 # optional
 pip install python-dotenv
