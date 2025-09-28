@@ -4,6 +4,7 @@ from bson import ObjectId
 class Traces:
     def __init__(
         self,
+        lecture_id: str,
         onlineClass: str,
         classTitle: str,
         user: str,
@@ -20,6 +21,7 @@ class Traces:
         _id: ObjectId = None
     ):
         self._id = _id
+        self.lecture_id = lecture_id
         self.onlineClass = onlineClass
         self.classTitle = classTitle
         self.user = user
@@ -36,6 +38,7 @@ class Traces:
 
     def to_dict(self):
         data = {
+            "lectureId": self.lecture_id,
             "onlineClass": self.onlineClass,
             "classTitle":  self.classTitle,
             "user": self.user,
@@ -57,6 +60,7 @@ class Traces:
     @staticmethod
     def from_dict(data):
         return Traces(
+            lecture_id=data["lectureId"],
             onlineClass=data["onlineClass"],
             classTitle=data["classTitle"],
             user=data["user"],
