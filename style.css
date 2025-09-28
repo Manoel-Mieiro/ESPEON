@@ -210,12 +210,43 @@ body {
 }
 
 #form_lecture {
-  padding: 10px;
+  /* padding: 10px; */
   border-radius: 5px;
+  display: flex;
+  flex-direction: column; /* coloca os campos em coluna */
+  gap: 12px; /* espaço vertical entre cada elemento */
+}
+
+#form_lecture_main{
+  width: 30em;
 }
 
 #form_lecture label {
   font-size: 16px;
+  width: 100%;
+}
+
+#form_lecture input {
+  width: 100%;
+}
+
+#footer_lecture {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;    
+  gap: 8px;               
+}
+
+.footer_back_btn,  #regex{
+  background-color: var(--espeon-red);
+  text-transform: uppercase;
+  font-weight: bolder;
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
 }
 
 #espeon_image {
@@ -287,3 +318,9 @@ body {
   width: 15em;
   min-width: 12%;
 }
+
+#regex{
+  background-color: var(--espeon-blue);
+  color: white;
+}
+
