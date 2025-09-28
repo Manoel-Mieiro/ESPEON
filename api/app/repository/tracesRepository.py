@@ -2,31 +2,39 @@ from bson import ObjectId
 from db import client
 from app.models.traces import Traces
 
-db = client["SUBJECT"]
+db = client["TRACES"]
+collection = "logs"
 
 
-def findAllTraces(subject):
-    traces = db[subject]
+def findAllTraces():
+    """Busca todos os traces da collection logs."""
     try:
-        docs = list(traces.find({}))
-        trace_list = []
-
-        for doc in docs:
-            trace = Traces.from_dict(doc)
-            trace_list.append(trace.to_dict())
-
+        docs = list(db[collection].find({}))
+        trace_list = [Traces.from_dict(doc).to_dict() for doc in docs]
         return trace_list
-
     except Exception as e:
-        print("[REPOSITORY]Erro ao buscar traces:", e)
+        print("[REPOSITORY] Erro ao buscar traces:", e)
         raise e
 
 
-def createTrace(data: Traces, collection):
-    traces = db[collection]
+def findOneTraceByLecture(lecture_id: str):
+    """Busca todos os traces na collection logs pelo lecture_id."""
     try:
-        print("\n[REPOSITORY]Criando trace:", data, "\n")
-        result = traces.insert_one(data.to_dict())
+        docs = list(db[collection].find({"lectureId": lecture_id}))
+        if not docs:
+            return []
+        trace_list = [Traces.from_dict(doc).to_dict() for doc in docs]
+        return trace_list
+    except Exception as e:
+        print("[REPOSITORY] Erro ao buscar traces por lecture_id:", e)
+        raise e
+
+
+def createTrace(data: Traces):
+    """Cria um trace na collection logs."""
+    try:
+        print("\n[REPOSITORY] Criando trace:", data, "\n")
+        result = db[collection].insert_one(data.to_dict())
         data._id = result.inserted_id
 
         if not data._id:
@@ -34,5 +42,5 @@ def createTrace(data: Traces, collection):
 
         return data.to_dict()
     except Exception as e:
-        print("[REPOSITORY]Erro ao criar trace:", e)
+        print("[REPOSITORY] Erro ao criar trace:", e)
         raise e
