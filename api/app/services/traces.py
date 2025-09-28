@@ -1,24 +1,35 @@
 import app.repository.tracesRepository as repository
+from app.dto.traces import TracesDTO
+import re
+from datetime import datetime
 
-collection = None
 
-def findAllTraces(subject):
+def findAllTraces():
     try:
-        return repository.findAllTraces(subject)
+        return repository.findAllTraces()
+    except Exception as e:
+        print("[SERVICE]Erro ao buscar traces:", e)
+        raise e
+    
+def findOneTraceByLecture(lecture_id):
+    try:
+        return repository.findOneTraceByLecture(lecture_id)
     except Exception as e:
         print("[SERVICE]Erro ao buscar traces:", e)
         raise e
 
 
-def createTrace(data):
+def createTrace(data: TracesDTO):
     try:
-        print("[SERVICE]Definindo Collection...")
-        collection = extractSubject(data.classTitle)
-        print("[SERVICE]Collection: ", collection)
-        print("[SERVICE]Criando trace:", data)
-        return repository.createTrace(data, collection)
+        lecture = extract_lecture_id(data.classTitle)
+        data.lectureId = lecture
+        timestamp = convertTime(data.timestamp)
+        data.timestamp = timestamp
+        lastAccessed = convertTime(data.lastAccessed)
+        data.lastAccessed = lastAccessed
+        return repository.createTrace(data.to_standard())
     except Exception as e:
-        print("[SERVICE]Erro ao criar trace:", e)
+        print("[SERVICE] Erro ao criar trace:", e)
         raise e
 
 
@@ -28,16 +39,13 @@ def extractSubject(subject):
     return substring.lower().replace(" ", '_')
 
 
-# def convertObjectIdToString(json):
-#     try:
-#         if isinstance(json, list):
-#             for item in json:
-#                 if '_id' in item:
-#                     item['_id'] = str(item['_id'])
-#         elif isinstance(json, dict):
-#             if '_id' in json:
-#                 json['_id'] = str(json['_id'])
-#         return json
-#     except Exception as e:
-#         print("[SERVICE]Erro ao converter ObjectId para string:", e)
-#         raise e
+def extract_lecture_id(title: str) -> str:
+    match = re.search(r"\[([^\]]+)\]", title)
+    return match.group(1) if match else None
+
+
+def convertTime(ms: float | int) -> str:
+    # converte milissegundos para segundos
+    seconds = ms / 1000
+    dt = datetime.fromtimestamp(seconds)
+    return dt.strftime("%H:%M:%S")
