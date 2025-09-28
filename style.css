@@ -143,6 +143,44 @@ body {
   margin-bottom: 30px;
 }
 
+.espeon_face_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav_container{
+  margin: 20px;
+  /* background-color: var(--espeon-purple-dark); */
+}
+
+.nav_container ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; 
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  /* margin-left: 20%;
+  margin-right: 20%;
+  margin-top: 10%;
+  margin-bottom: 10%; */
+}
+
+.nav_button li {
+  width: 70px;
+  height: 70px;
+  background-color: var(--espeon-red);     
+  border-radius: 50%;        
+  display: flex;             
+  justify-content: center;
+  align-items: center;
+  color: white;              
+  font-weight: bold;
+  box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25); 
+  cursor: pointer;
+}
+
 #form_login_header {
   background-color: transparent;
 }
@@ -226,4 +264,13 @@ body {
   padding: 10px;
   border-radius: 4px;
   border: none;
+}
+
+#shadow {
+  box-shadow: 8px 8px 4px 0 rgba(0, 0, 0, 0.25);
+  width: 30em;
+}
+
+#espeon-face {
+  min-width: 12%;
 }
