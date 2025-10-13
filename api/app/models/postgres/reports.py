@@ -1,0 +1,70 @@
+from bson import ObjectId
+from datetime import datetime
+
+
+class Report:
+    def __init__(
+        self,
+        lecture_id: str,
+        subject_id: str,
+        total_students: int = 0,
+        total_time_watched: float = 0.0,
+        avg_lecture_duration: float = None,
+        avg_idle_duration: float = None,
+        avg_attention_span: float = None,
+        pct_enabled_camera: float = None,
+        pct_enabled_mic: float = None,
+        avg_cam_streaming_span: float = None,
+        avg_mic_streaming_span: float = None,
+        issued_at: datetime = None,
+        _id: ObjectId = None
+    ):
+        self._id = _id
+        self._lecture_id = lecture_id
+        self._subject_id = subject_id
+        self._total_students = total_students
+        self._total_time_watched = total_time_watched
+        self._avg_lecture_duration = avg_lecture_duration
+        self._avg_idle_duration = avg_idle_duration
+        self._avg_attention_span = avg_attention_span
+        self._pct_enabled_camera = pct_enabled_camera
+        self._pct_enabled_mic = pct_enabled_mic
+        self._avg_cam_streaming_span = avg_cam_streaming_span
+        self._avg_mic_streaming_span = avg_mic_streaming_span
+        self._issued_at = issued_at or datetime.utcnow()
+
+    def to_dict(self):
+        data = {
+            "lecture_id": self._lecture_id,
+            "subject_id": self._subject_id,
+            "total_students": self._total_students,
+            "total_time_watched": self._total_time_watched,
+            "avg_lecture_duration": self._avg_lecture_duration,
+            "avg_idle_duration": self._avg_idle_duration,
+            "avg_attention_span": self._avg_attention_span,
+            "pct_enabled_camera": self._pct_enabled_camera,
+            "pct_enabled_mic": self._pct_enabled_mic,
+            "avg_cam_streaming_span": self._avg_cam_streaming_span,
+            "avg_mic_streaming_span": self._avg_mic_streaming_span,
+            "issued_at": self._issued_at
+        }
+        if self._id:
+            data["_id"] = str(self._id)
+        return data
+
+    @staticmethod
+    def from_dict(data):
+        return Report(
+            lecture_id=data["lecture_id"],
+            subject_id=data["subject_id"],
+            total_students=data.get("total_students", 0),
+            total_time_watched=data.get("total_time_watched", 0.0),
+            avg_lecture_duration=data.get("avg_lecture_duration"),
+            avg_idle_duration=data.get("avg_idle_duration"),
+            avg_attention_span=data.get("avg_attention_span"),
+            pct_enabled_camera=data.get("pct_enabled_camera"),
+            pct_enabled_mic=data.get("pct_enabled_mic"),
+            avg_cam_streaming_span=data.get("avg_cam_streaming_span"),
+            avg_mic_streaming_span=data.get("avg_mic_streaming_span"),
+            issued_at=data.get("issued_at"),
+        )
