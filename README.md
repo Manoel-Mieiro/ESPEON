@@ -35,3 +35,9 @@ To start the project, run the following command:
 ```bash
 cd api
 python run.py
+```
+
+## Guide
+Abaixo, documentação do código
+
+- [Reports](./docs/REPORTS.md)
