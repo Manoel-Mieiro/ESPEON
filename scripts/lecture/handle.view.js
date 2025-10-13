@@ -2,13 +2,16 @@ export function handleView(content) {
   const copyCard = document.getElementById("lecture_title");
   const lectureCard = document.getElementById("form_lecture");
   const copyBtn = document.getElementById("copy");
+  const homeBtn = document.getElementById("back")
   if (copyCard.style.display === "none") {
     lectureCard.style.display = "none";
     copyCard.style.display = "block";
+    homeBtn.textContent = "MENU";
     chrome.storage.session.set({ lectureView: "copy" });
   } else if (lectureCard.style.display === "none") {
     lectureCard.style.display = "block";
     copyCard.style.display = "none";
+    homeBtn.textContent = "VOLTAR"
     chrome.storage.session.remove("lectureView");
   }
 }
