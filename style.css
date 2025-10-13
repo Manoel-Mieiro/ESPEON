@@ -104,14 +104,25 @@ body {
 .clipboard_container {
   display: flex;
   flex-direction: row;
-  padding: 10px;
+  align-items: stretch; 
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin-bottom: 15px;
 }
 
 .clipboard_text {
   background-color: white;
   padding: 10px;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
+  border-radius: 4px 0 0 4px; 
+  flex: 1; 
+  min-width: 0;
+  word-break: break-word;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center; 
 }
 
 .main_card {
@@ -143,6 +154,56 @@ body {
   margin-bottom: 30px;
 }
 
+.espeon_face_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav_container {
+  margin: 20px;
+  /* background-color: var(--espeon-purple-dark); */
+}
+
+.nav_container ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+
+.nav_button li {
+  width: 80px;
+  height: 80px;
+  background-color: var(--espeon-red);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.nav_button span {
+  font-size: 0.7em;
+}
+
+.nav_button img {
+  width: 3em;
+}
+.nav_item_container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
 #form_login_header {
   background-color: transparent;
 }
@@ -160,12 +221,43 @@ body {
 }
 
 #form_lecture {
-  padding: 10px;
+  /* padding: 10px; */
   border-radius: 5px;
+  display: flex;
+  flex-direction: column; /* coloca os campos em coluna */
+  gap: 12px; /* espaço vertical entre cada elemento */
+}
+
+#form_lecture_main{
+  width: 30em;
 }
 
 #form_lecture label {
   font-size: 16px;
+  width: 100%;
+}
+
+#form_lecture input {
+  width: 100%;
+}
+
+#footer_lecture {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;    
+  gap: 8px;               
+}
+
+.footer_back_btn,  #regex{
+  background-color: var(--espeon-red);
+  text-transform: uppercase;
+  font-weight: bolder;
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
 }
 
 #espeon_image {
@@ -227,3 +319,19 @@ body {
   border-radius: 4px;
   border: none;
 }
+
+#shadow {
+  box-shadow: 8px 8px 4px 0 rgba(0, 0, 0, 0.25);
+  width: 30em;
+}
+
+#espeon-face {
+  width: 15em;
+  min-width: 12%;
+}
+
+#regex{
+  background-color: var(--espeon-blue);
+  color: white;
+}
+

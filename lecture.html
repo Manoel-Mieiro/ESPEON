@@ -7,12 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aula</title>
   </head>
-  <body class="form_body">
+  <body class="form_body" id="form_lecture_main">
     <main class="form_main">
       <div class="form_header">
         <h1>CRIAR AULA</h1>
       </div>
-
+      <br />
+      <br />
       <div class="form-container">
         <div id="lecture_title" style="display: none">
           <div class="clipboard_container">
@@ -22,36 +23,27 @@
             <button type="button" id="copy">Copiar</button>
           </div>
           <div class="form_footer">
-            <button type="button" id="back_lecture">Voltar</button>
+            <button type="button" id="back_lecture" class="underline_btn footer_back_btn">Voltar</button>
           </div>
         </div>
 
         <form class="forms" id="form_lecture">
           <label for="subject">DISCIPLINA</label>
-          <select name="subject" id="subject">
-          </select>
+          <select name="subject" id="subject"></select>
           <!-- <input type="text" id="subject" name="subject" /><br /><br /> -->
           <label for="date_lecture">DATA</label>
-          <input type="date" name="date" id="date_lecture" /><br /><br />
+          <input type="date" name="date" id="date_lecture" />
           <label for="period_start">INÍCIO</label>
-          <input
-            type="time"
-            name="period_start"
-            id="period_start"
-          /><br /><br />
+          <input type="time" name="period_start" id="period_start" />
           <label for="period_end">FIM</label>
-          <input type="time" name="period_end" id="period_end" /><br /><br />
+          <input type="time" name="period_end" id="period_end" />
           <label for="teacher">DOCENTE</label>
-          <input
-            type="email"
-            name="teacher"
-            id="teacher"
-            readonly
-          /><br /><br />
+          <input type="email" name="teacher" id="teacher" readonly />
           <input id="regex" class="btns" type="submit" value="Criar" />
         </form>
       </div>
-      <div class="form_footer">
+      <div class="form_footer" id="footer_lecture">
+        <button id="back" class="underline_btn footer_back_btn">voltar</button>
         <button id="exit" class="underline_btn">sair</button>
       </div>
     </main>
