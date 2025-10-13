@@ -104,14 +104,25 @@ body {
 .clipboard_container {
   display: flex;
   flex-direction: row;
-  padding: 10px;
+  align-items: stretch; 
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin-bottom: 15px;
 }
 
 .clipboard_text {
   background-color: white;
   padding: 10px;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
+  border-radius: 4px 0 0 4px; 
+  flex: 1; 
+  min-width: 0;
+  word-break: break-word;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center; 
 }
 
 .main_card {
