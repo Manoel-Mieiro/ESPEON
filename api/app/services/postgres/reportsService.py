@@ -71,10 +71,14 @@ def populateReportMetrics(report: object):
     total_students = calculateTotalStudents(report._lecture_id)
     total_time_watched = calculateTotalTimeWatched(report._lecture_id)
     avg_lecture_duration = calculateAvgLectureDuration(report._subject_id)
+    pct_enabled_camera, pct_enabled_mic = calculateCameraMicUsage(
+        report._lecture_id)
 
     report._total_students = total_students
     report._total_time_watched = total_time_watched
     report._avg_lecture_duration = avg_lecture_duration
+    report._pct_enabled_camera = pct_enabled_camera
+    report._pct_enabled_mic = pct_enabled_mic
     return report
 
 
@@ -185,7 +189,7 @@ def calculateAvgLectureDuration(subject_id: str):
             period_end = lecture.get("period_end")
 
             if period_start and period_end:
-                
+
                 fmt = "%H:%M:%S"
                 start_time = datetime.strptime(period_start, fmt).time()
                 end_time = datetime.strptime(period_end, fmt).time()
@@ -214,3 +218,38 @@ def calculateAvgLectureDuration(subject_id: str):
     except Exception as e:
         print(f"[SERVICE] Erro ao calcular avg_lecture_duration: {e}")
         raise e
+
+
+def calculateCameraMicUsage(lecture_id: str):
+    """
+    Calcula o percentual de câmeras e microfones ligados durante a aula.
+    Usa a API de traces.
+    Retorna (pct_camera, pct_mic) em float (%)
+    """
+    try:
+        url = f"http://localhost:{flask_port}/traces/{lecture_id}"
+        response = requests.get(url)
+        response.raise_for_status()
+
+        traces = response.json()
+        if not traces:
+            print(
+                f"[SERVICE] Nenhum trace encontrado para lecture_id={lecture_id}")
+            return 0.0, 0.0
+
+        total = len(traces)
+        camera_on = sum(1 for t in traces if t.get("cameraEnabled") is True)
+        mic_on = sum(1 for t in traces if t.get("microphoneEnabled") is True)
+
+        pct_camera = round(camera_on / total * 100, 2)
+        pct_mic = round(mic_on / total * 100, 2)
+
+        print(
+            f"[SERVICE] Lecture {lecture_id}: pct_enabled_camera={pct_camera}%, pct_enabled_mic={pct_mic}%"
+        )
+        return pct_camera, pct_mic
+
+    except Exception as e:
+        print(
+            f"[SERVICE] Erro ao calcular pct_camera/pct_mic para lecture_id={lecture_id}: {e}")
+        return 0.0, 0.0
