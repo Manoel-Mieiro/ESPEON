@@ -1,4 +1,5 @@
 import app.repository.postgres.reportsRepository as reports
+from datetime import datetime
 import requests
 import os
 
@@ -9,10 +10,11 @@ GLOBALS
 flask_port = os.getenv("FLASK_RUN_PORT", "8183")
 
 
-
 """
 CRUDS
 """
+
+
 def findAllReports():
     try:
         return reports.findAllReports()
@@ -65,11 +67,13 @@ def deleteReport(report_id: str):
 def populateReportMetrics(report: object):
     """
     Calcula e preenche campos derivados do relatório (ex: total_students, tempo médio, etc.)
-    """ 
+    """
     total_students = calculateTotalStudents(report._lecture_id)
-    report._total_students = total_students
-    return report
+    total_time_watched = calculateTotalTimeWatched(report._lecture_id)
 
+    report._total_students = total_students
+    report._total_time_watched = total_time_watched
+    return report
 
 
 """
@@ -103,36 +107,49 @@ def calculateTotalStudents(lecture_id: str):
             f"[SERVICE] Erro ao calcular total de estudantes para {lecture_id}: {e}")
         raise e
 
+
 def calculateTotalTimeWatched(lecture_id: str):
     """
     Calcula o tempo total assistido (em minutos) com base na duração da aula (lecture).
-    Usa period_start e period_end da tabela lecture.
     """
     try:
+        flask_port = os.getenv("FLASK_RUN_PORT", "8183")
         print(f"[SERVICE] Calculando total_time_watched para lecture_id={lecture_id}")
 
-        lecture = lectures.getLectureById(lecture_id) 
-
-        base_url = f"http://localhost:{flask_port}/lectures/?id={lecture_id}"
-
+        base_url = f"http://localhost:{flask_port}/lectures/{lecture_id}"
         response = requests.get(base_url)
         response.raise_for_status()
 
-        traces = response.json()
+        lecture = response.json()
 
         if not lecture:
-            raise ValueError(f"Aula {lecture_id} não encontrada no banco de dados.")
+            raise ValueError(f"Aula {lecture_id} não encontrada.")
 
-        period_start = lecture.period_start
-        period_end = lecture.period_end
+        period_start = lecture.get("period_start")
+        period_end = lecture.get("period_end")
 
         if not period_start or not period_end:
             raise ValueError(f"Aula {lecture_id} possui campos nulos em period_start/period_end.")
 
-        duration = (period_end - period_start).total_seconds() / 60  # minutos
-        print(f"[SERVICE] Duração calculada: {duration:.2f} minutos.")
+        # Converter strings para objetos time se necessário (considerando segundos)
+        if isinstance(period_start, str):
+            period_start = datetime.strptime(period_start, "%H:%M:%S").time()
+        if isinstance(period_end, str):
+            period_end = datetime.strptime(period_end, "%H:%M:%S").time()
 
-        return round(duration, 2)
+        # Combinar com uma data dummy para calcular a diferença
+        dummy_date = datetime(2000, 1, 1)
+        start_dt = datetime.combine(dummy_date, period_start)
+        end_dt = datetime.combine(dummy_date, period_end)
+
+        # Ajuste se a aula terminar depois da meia-noite
+        if end_dt < start_dt:
+            end_dt = end_dt.replace(day=end_dt.day + 1)
+
+        duration_minutes = (end_dt - start_dt).total_seconds() / 60
+        print(f"[SERVICE] Duração calculada: {duration_minutes:.2f} minutos.")
+
+        return round(duration_minutes, 2)
 
     except Exception as e:
         print(f"[SERVICE] Erro ao calcular total_time_watched: {e}")
