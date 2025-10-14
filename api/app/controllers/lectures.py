@@ -1,6 +1,7 @@
 from app.services.postgres.lectures import lectures as lectureService
 from app.dto.postgres.lectures import LectureDTO
 
+
 def findAllLectures():
     try:
         return lectureService.findAllLectures()
@@ -57,4 +58,16 @@ def deleteLecture(lecture_id):
         return lectureService.deleteLecture(lecture_id)
     except Exception as e:
         print("[CONTROLLER] Error deleting lecture:", e)
+        raise e
+
+
+def findLecturesBySubject(subject_id: str):
+    try:
+        fetched = lectureService.findLecturesBySubject(subject_id)
+        if not fetched:
+            raise Exception(
+                f"Nenhuma aula encontrada para subject_id {subject_id}")
+        return fetched
+    except Exception as e:
+        print("[CONTROLLER] Error fetching lectures:", e)
         raise e

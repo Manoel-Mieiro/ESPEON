@@ -47,3 +47,11 @@ def deleteLecture(lecture_id: str):
     except Exception as e:
         print("[SERVICE] Error deleting lecture:", e)
         raise e
+
+
+def findLecturesBySubject(subject_id: str):
+    try:
+        return lectures.findLecturesBySubject(subject_id)
+    except Exception as e:
+        print("[SERVICE] Error fetching lectures:", e)
+        raise e

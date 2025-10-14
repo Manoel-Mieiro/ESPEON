@@ -30,6 +30,14 @@ def findOneLecture(_id):
         return jsonify({"[ROUTES]error": str(e)}), 500
 
 
+@lectures_bp.route("/lectures/subject/<subject_id>", methods=["GET"])
+def getLecturesBySubject(subject_id):
+    try:
+        return jsonify(lectureController.findLecturesBySubject(subject_id))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @lectures_bp.route("/lectures/<_id>", methods=["PUT"])
 def updateLecture(_id):
     try:
