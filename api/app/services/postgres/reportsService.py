@@ -10,6 +10,30 @@ GLOBALS
 flask_port = os.getenv("FLASK_RUN_PORT", "8183")
 
 
+def fetchLectureTraces(lecture_id: str):
+    """
+    Busca os traces de uma aula e retorna o JSON diretamente.
+
+    Args:
+        lecture_id (str): ID da aula
+
+    Returns:
+        list: lista de traces da aula
+    """
+    try:
+        flask_port = os.getenv("FLASK_RUN_PORT", "8183")
+        base_url = f"http://localhost:{flask_port}/traces/{lecture_id}"
+        response = requests.get(base_url)
+        response.raise_for_status()
+        traces = response.json()
+        return traces
+
+    except Exception as e:
+        print(
+            f"[SERVICE] Erro ao buscar traces para lecture_id={lecture_id}: {e}")
+        return []
+
+
 def timeStrToEpochMs(time_str: str) -> float:
     """
     Converte string "HH:MM:SS" para epoch ms usando data dummy.
@@ -77,60 +101,61 @@ def populateReportMetrics(report: object):
     """
     Calcula e preenche campos derivados do relatório (ex: total_students, tempo médio, etc.)
     """
-    total_students = calculateTotalStudents(report._lecture_id)
+
+    traces = fetchLectureTraces(report._lecture_id)
+
+    # Calcula métricas usando os traces
+    total_students = calculateTotalStudents(traces)
     total_time_watched = calculateTotalTimeWatched(report._lecture_id)
     avg_lecture_duration = calculateAvgLectureDuration(report._subject_id)
-    pct_enabled_camera, pct_enabled_mic = calculateCameraMicUsage(
-        report._lecture_id)
-    avg_idle_duration = calculateAvgIdle(report._lecture_id)
+    pct_enabled_camera, pct_enabled_mic = calculateCameraMicUsage(traces)
+    avg_idle_duration = calculateAvgIdle(traces)
+    avg_attention_span = calculateAvgAttentionSpan(traces, total_time_watched, total_students, avg_idle_duration)
 
+    # Atualiza o objeto report
     report._total_students = total_students
     report._total_time_watched = total_time_watched
     report._avg_lecture_duration = avg_lecture_duration
     report._pct_enabled_camera = pct_enabled_camera
     report._pct_enabled_mic = pct_enabled_mic
     report._avg_idle_duration = avg_idle_duration
+    report._avg_attention_span = avg_attention_span
+
     return report
+
 
 
 """
 Campos do Relatório
 """
 
-
-def calculateTotalStudents(lecture_id: str):
+def calculateTotalStudents(traces):
     """
     Retorna o número de estudantes únicos que participaram de uma aula (lecture_id).
     Faz uma chamada à API de traces e conta os usuários distintos.
     """
     try:
-        base_url = f"http://localhost:{flask_port}/traces/?id={lecture_id}"
-
-        response = requests.get(base_url)
-        response.raise_for_status()
-
-        traces = response.json()
 
         unique_users = {trace.get("user")
                         for trace in traces if trace.get("user")}
         total_students = len(unique_users)
 
+        lecture_id = traces[0].get("lecture_id") if traces else "desconhecido"
         print(
             f"[SERVICE] Lecture {lecture_id} tem {total_students} estudantes únicos.")
         return total_students
 
     except Exception as e:
         print(
-            f"[SERVICE] Erro ao calcular total de estudantes para {lecture_id}: {e}")
+            f"[SERVICE] Erro ao calcular total de estudantes para {traces.get("lecture_id")}: {e}")
         raise e
 
 
-def calculateTotalTimeWatched(lecture_id: str):
+def calculateTotalTimeWatched(lecture_id):
     """
     Calcula o tempo total assistido (em minutos) com base na duração da aula (lecture).
     """
     try:
-        flask_port = os.getenv("FLASK_RUN_PORT", "8183")
         print(
             f"[SERVICE] Calculando total_time_watched para lecture_id={lecture_id}")
 
@@ -226,22 +251,18 @@ def calculateAvgLectureDuration(subject_id: str) -> float:
         raise e
 
 
-def calculateCameraMicUsage(lecture_id: str):
+def calculateCameraMicUsage(traces):
     """
     Calcula o percentual de câmeras e microfones ligados durante a aula.
     Usa a API de traces.
     Retorna (pct_camera, pct_mic) em float (%)
     """
     try:
-        url = f"http://localhost:{flask_port}/traces/{lecture_id}"
-        response = requests.get(url)
-        response.raise_for_status()
-
-        traces = response.json()
         if not traces:
-            print(
-                f"[SERVICE] Nenhum trace encontrado para lecture_id={lecture_id}")
+            print(f"[SERVICE] Nenhum trace encontrado.")
             return 0.0, 0.0
+
+        lecture_id = traces[0].get("lecture_id") if traces else "desconhecido"
 
         total = len(traces)
         camera_on = sum(1 for t in traces if t.get("cameraEnabled") is True)
@@ -250,62 +271,96 @@ def calculateCameraMicUsage(lecture_id: str):
         pct_camera = round(camera_on / total * 100, 2)
         pct_mic = round(mic_on / total * 100, 2)
 
-        print(
-            f"[SERVICE] Lecture {lecture_id}: pct_enabled_camera={pct_camera}%, pct_enabled_mic={pct_mic}%"
-        )
+        print(f"[SERVICE] Lecture {lecture_id}: pct_enabled_camera={pct_camera}%, pct_enabled_mic={pct_mic}%")
         return pct_camera, pct_mic
 
     except Exception as e:
-        print(
-            f"[SERVICE] Erro ao calcular pct_camera/pct_mic para lecture_id={lecture_id}: {e}")
+        print(f"[SERVICE] Erro ao calcular pct_camera/pct_mic para lecture_id={lecture_id}: {e}")
         return 0.0, 0.0
 
 
-def calculateAvgIdle(lecture_id: str) -> float:
+
+def calculateAvgIdle(traces) -> float:
     """
     Calcula a média de tempo ocioso (idle) dos alunos em uma aula.
-    idle_duration = timestamp - lectureTabLastAccessed (em minutos)
+    idle_duration = lectureTabLastAccessed - timestamp (em minutos)
+
+    Args:
+        traces (list): lista de dicionários com os traces da aula
+
+    Returns:
+        float: tempo médio ocioso por aluno (em minutos), arredondado para 2 casas decimais
     """
     try:
-        print(
-            f"[SERVICE] Calculando avg_idle_duration para lecture_id={lecture_id}")
-
-        base_url = f"http://localhost:{flask_port}/traces/{lecture_id}"
-        response = requests.get(base_url)
-        response.raise_for_status()
-
-        traces = response.json()
         if not traces:
-            raise ValueError(
-                f"Nenhum trace encontrado para a aula {lecture_id}.")
+            print(f"[SERVICE] Nenhum trace encontrado.")
+            return 0.0
+
+        lecture_id = traces[0].get("lecture_id") if traces else "desconhecido"
+        print(f"[SERVICE] Calculando avg_idle_duration para lecture_id={lecture_id}")
 
         idle_durations = []
         for trace in traces:
             ts_str = trace.get("timestamp")
             last_access_str = trace.get("lectureTabLastAccessed")
-
-            if ts_str is None or last_access_str is None:
+            if not ts_str or not last_access_str:
                 continue
 
+            # converte para epoch ms 
             ts_ms = timeStrToEpochMs(ts_str)
             last_access_ms = timeStrToEpochMs(last_access_str)
 
-            # Calcular idle duration em minutos
+            # idle duration em minutos
             idle_min = (last_access_ms - ts_ms) / (1000 * 60)
             if idle_min >= 0:
                 idle_durations.append(idle_min)
 
         if not idle_durations:
-            print(
-                f"[SERVICE] Nenhum idle válido encontrado para {lecture_id}.")
+            print(f"[SERVICE] Nenhum idle válido encontrado para {lecture_id}.")
             return 0.0
 
         avg_idle = sum(idle_durations) / len(idle_durations)
-        print(
-            f"[SERVICE] avg_idle_duration calculado: {avg_idle:.2f} minutos.")
-
+        print(f"[SERVICE] avg_idle_duration calculado: {avg_idle:.2f} minutos.")
         return round(avg_idle, 2)
 
     except Exception as e:
         print(f"[SERVICE] Erro ao calcular avg_idle_duration: {e}")
-        raise e
+        return 0.0
+
+
+def calculateAvgAttentionSpan(traces, total_time_watched: float, total_students: int, avg_idle_duration: float) -> float:
+    """
+    Calcula o tempo médio de atenção (avg_attention_span) dos alunos em uma aula.
+
+    Fórmula:
+        avg_attention_span = avg_watch_duration - avg_idle_duration
+
+    Onde:
+        avg_watch_duration = total_time_watched / total_students
+
+    Args:
+        traces (list): lista de dicionários com os traces da aula
+        total_time_watched (float): tempo total assistido por todos os alunos (em minutos)
+        total_students (int): quantidade de alunos na aula
+
+    Returns:
+        float: tempo médio de atenção por aluno (em minutos), arredondado para 2 casas decimais
+    """
+    try:
+        if total_students <= 0:
+            print("[SERVICE] total_students é zero ou negativo, retornando 0.0")
+            return 0.0
+
+        avg_watch_duration = total_time_watched / total_students
+
+        avg_attention_span = avg_watch_duration - avg_idle_duration
+
+        avg_attention_span = max(avg_attention_span, 0.0)
+
+        lecture_id = traces[0].get("lecture_id") if traces else "desconhecido"
+        print(f"[SERVICE] Lecture {lecture_id}: avg_attention_span calculado = {avg_attention_span:.2f} minutos")
+        return round(avg_attention_span, 2)
+
+    except Exception as e:
+        print(f"[SERVICE] Erro ao calcular avg_attention_span: {e}")
+        return 0.0
