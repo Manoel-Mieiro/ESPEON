@@ -16,6 +16,12 @@ class Report:
         pct_enabled_mic: float = None,
         avg_cam_streaming_span: float = None,
         avg_mic_streaming_span: float = None,
+        min_lecture_duration: float = None,
+        max_lecture_duration: float = None,
+        min_idle_duration: float = None,
+        max_idle_duration: float = None,
+        min_attention_span: float = None,
+        max_attention_span: float = None,
         issued_at: datetime = None,
         _id: ObjectId = None
     ):
@@ -31,6 +37,12 @@ class Report:
         self._pct_enabled_mic = pct_enabled_mic
         self._avg_cam_streaming_span = avg_cam_streaming_span
         self._avg_mic_streaming_span = avg_mic_streaming_span
+        self._min_lecture_duration = min_lecture_duration
+        self._max_lecture_duration = max_lecture_duration
+        self._min_idle_duration = min_idle_duration
+        self._max_idle_duration = max_idle_duration
+        self._min_attention_span = min_attention_span
+        self._max_attention_span = max_attention_span
         self._issued_at = issued_at or datetime.utcnow()
 
     def to_dict(self):
@@ -46,6 +58,12 @@ class Report:
             "pct_enabled_mic": self._pct_enabled_mic,
             "avg_cam_streaming_span": self._avg_cam_streaming_span,
             "avg_mic_streaming_span": self._avg_mic_streaming_span,
+            "min_lecture_duration": self._min_lecture_duration,
+            "max_lecture_duration": self._max_lecture_duration,
+            "min_idle_duration": self._min_idle_duration,
+            "max_idle_duration": self._max_idle_duration,
+            "min_attention_span": self._min_attention_span,
+            "max_attention_span": self._max_attention_span,
             "issued_at": self._issued_at
         }
         if self._id:
@@ -66,5 +84,11 @@ class Report:
             pct_enabled_mic=data.get("pct_enabled_mic"),
             avg_cam_streaming_span=data.get("avg_cam_streaming_span"),
             avg_mic_streaming_span=data.get("avg_mic_streaming_span"),
+            min_lecture_duration=data.get("min_lecture_duration"),
+            max_lecture_duration=data.get("max_lecture_duration"),
+            min_idle_duration=data.get("min_idle_duration"),
+            max_idle_duration=data.get("max_idle_duration"),
+            min_attention_span=data.get("min_attention_span"),
+            max_attention_span=data.get("max_attention_span"),
             issued_at=data.get("issued_at"),
         )
