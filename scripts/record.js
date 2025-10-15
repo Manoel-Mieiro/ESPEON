@@ -47,10 +47,9 @@ async function getTab() {
   return await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 }
 
-function buildPayload(tab, target, classTitle, eventType, user) {
+function buildPayload(lectureTab, tab, target, eventType, user) {
   return {
     onlineClass: target,
-    classTitle: classTitle,
     user: user,
     url: tab.url,
     title: tab.title,
@@ -62,6 +61,12 @@ function buildPayload(tab, target, classTitle, eventType, user) {
     lastAccessed: tab.lastAccessed,
     timestamp: Date.now(),
     event: eventType,
+    classTitle: lectureTab.title,
+    lectureMuted: lectureTab.mutedInfo.muted,
+    lectureTabState: lectureTab.active ? "active" : "inactive",
+    lectureTabLastAccessed: lectureTab.lastAccessed,
+    lectureAudible: lectureTab.audible,
+    lectureMutedInfoReason: lectureTab.mutedInfo.reason || null,
   };
 }
 
@@ -79,13 +84,13 @@ function isTitleValid(title) {
   return regex.test(title);
 }
 
-function extractSubject(title){
-  const lastCharIndex = title.indexOf(']')
-  return title.substring(1, lastCharIndex)
+function extractSubject(title) {
+  const lastCharIndex = title.indexOf("]");
+  return title.substring(1, lastCharIndex);
 }
 
-function standardizeSubject(subject){
-  return subject.toLowerCase().replace(" ", `_`)
+function standardizeSubject(subject) {
+  return subject.toLowerCase().replace(" ", `_`);
 }
 
 export default {
@@ -97,5 +102,5 @@ export default {
   getTab,
   isTitleValid,
   extractSubject,
-  standardizeSubject
+  standardizeSubject,
 };
