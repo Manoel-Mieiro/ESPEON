@@ -10,7 +10,8 @@ def findAllTraces():
     except Exception as e:
         print("[SERVICE]Erro ao buscar traces:", e)
         raise e
-    
+
+
 def findOneTraceByLecture(lecture_id):
     try:
         return repository.findOneTraceByLecture(lecture_id)
@@ -27,6 +28,8 @@ def createTrace(data: TracesDTO):
         data.timestamp = timestamp
         lastAccessed = convertTime(data.lastAccessed)
         data.lastAccessed = lastAccessed
+        lectureTabLastAccessed = convertTime(data.lectureTabLastAccessed)
+        data.lectureTabLastAccessed = lectureTabLastAccessed
         return repository.createTrace(data.to_standard())
     except Exception as e:
         print("[SERVICE] Erro ao criar trace:", e)
