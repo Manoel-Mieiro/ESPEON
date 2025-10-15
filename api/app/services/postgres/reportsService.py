@@ -10,6 +10,15 @@ GLOBALS
 flask_port = os.getenv("FLASK_RUN_PORT", "8183")
 
 
+def timeStrToEpochMs(time_str: str) -> float:
+    """
+    Converte string "HH:MM:SS" para epoch ms usando data dummy.
+    """
+    dt = datetime.strptime(time_str, "%H:%M:%S")
+    dummy_date = datetime(2000, 1, 1, dt.hour, dt.minute, dt.second)
+    return dummy_date.timestamp() * 1000  # ms
+
+
 """
 CRUDS
 """
@@ -73,12 +82,14 @@ def populateReportMetrics(report: object):
     avg_lecture_duration = calculateAvgLectureDuration(report._subject_id)
     pct_enabled_camera, pct_enabled_mic = calculateCameraMicUsage(
         report._lecture_id)
+    avg_idle_duration = calculateAvgIdle(report._lecture_id)
 
     report._total_students = total_students
     report._total_time_watched = total_time_watched
     report._avg_lecture_duration = avg_lecture_duration
     report._pct_enabled_camera = pct_enabled_camera
     report._pct_enabled_mic = pct_enabled_mic
+    report._avg_idle_duration = avg_idle_duration
     return report
 
 
@@ -164,17 +175,18 @@ def calculateTotalTimeWatched(lecture_id: str):
         raise e
 
 
-def calculateAvgLectureDuration(subject_id: str):
+def calculateAvgLectureDuration(subject_id: str) -> float:
     """
     Calcula a duração média de todas as aulas de uma disciplina (subject_id)
     Retorna em minutos (float)
     """
     try:
         print(
-            f"[SERVICE] Calculando avg_lecture_duration para subject_id={subject_id}")
+            f"[SERVICE] Calculando avgLectureDuration para subject_id={subject_id}")
 
         response = requests.get(
-            f"http://localhost:8183/lectures/subject/{subject_id}").json()
+            f"http://localhost:8183/lectures/subject/{subject_id}"
+        ).json()
 
         if not response:
             print(
@@ -189,34 +201,28 @@ def calculateAvgLectureDuration(subject_id: str):
             period_end = lecture.get("period_end")
 
             if period_start and period_end:
-
-                fmt = "%H:%M:%S"
-                start_time = datetime.strptime(period_start, fmt).time()
-                end_time = datetime.strptime(period_end, fmt).time()
-
-                # Combina com data dummy
-                dummy_date = datetime(2000, 1, 1)
-                start_dt = datetime.combine(dummy_date, start_time)
-                end_dt = datetime.combine(dummy_date, end_time)
+                # Converte para epoch ms
+                start_ms = timeStrToEpochMs(period_start)
+                end_ms = timeStrToEpochMs(period_end)
 
                 # Ajuste se aula passar da meia-noite
-                if end_dt < start_dt:
-                    end_dt += timedelta(days=1)
+                if end_ms < start_ms:
+                    end_ms += 24 * 60 * 60 * 1000  # +1 dia em ms
 
-                duration = (end_dt - start_dt).total_seconds() / 60
-                total_minutes += duration
+                duration_min = (end_ms - start_ms) / (1000 * 60)
+                total_minutes += duration_min
                 count += 1
             else:
                 print(
                     f"[SERVICE] Aula {lecture.get('lecture_id')} com period_start/period_end nulos, ignorando")
 
-        avg_duration = total_minutes / count if count > 0 else 0.0
+        avgLectureDuration = total_minutes / count if count > 0 else 0.0
         print(
-            f"[SERVICE] Duração média calculada: {avg_duration:.2f} minutos para subject_id={subject_id}")
-        return round(avg_duration, 2)
+            f"[SERVICE] Duração média calculada: {avgLectureDuration:.2f} minutos para subject_id={subject_id}")
+        return round(avgLectureDuration, 2)
 
     except Exception as e:
-        print(f"[SERVICE] Erro ao calcular avg_lecture_duration: {e}")
+        print(f"[SERVICE] Erro ao calcular avgLectureDuration: {e}")
         raise e
 
 
@@ -253,3 +259,53 @@ def calculateCameraMicUsage(lecture_id: str):
         print(
             f"[SERVICE] Erro ao calcular pct_camera/pct_mic para lecture_id={lecture_id}: {e}")
         return 0.0, 0.0
+
+
+def calculateAvgIdle(lecture_id: str) -> float:
+    """
+    Calcula a média de tempo ocioso (idle) dos alunos em uma aula.
+    idle_duration = timestamp - lectureTabLastAccessed (em minutos)
+    """
+    try:
+        print(
+            f"[SERVICE] Calculando avg_idle_duration para lecture_id={lecture_id}")
+
+        base_url = f"http://localhost:{flask_port}/traces/{lecture_id}"
+        response = requests.get(base_url)
+        response.raise_for_status()
+
+        traces = response.json()
+        if not traces:
+            raise ValueError(
+                f"Nenhum trace encontrado para a aula {lecture_id}.")
+
+        idle_durations = []
+        for trace in traces:
+            ts_str = trace.get("timestamp")
+            last_access_str = trace.get("lectureTabLastAccessed")
+
+            if ts_str is None or last_access_str is None:
+                continue
+
+            ts_ms = timeStrToEpochMs(ts_str)
+            last_access_ms = timeStrToEpochMs(last_access_str)
+
+            # Calcular idle duration em minutos
+            idle_min = (last_access_ms - ts_ms) / (1000 * 60)
+            if idle_min >= 0:
+                idle_durations.append(idle_min)
+
+        if not idle_durations:
+            print(
+                f"[SERVICE] Nenhum idle válido encontrado para {lecture_id}.")
+            return 0.0
+
+        avg_idle = sum(idle_durations) / len(idle_durations)
+        print(
+            f"[SERVICE] avg_idle_duration calculado: {avg_idle:.2f} minutos.")
+
+        return round(avg_idle, 2)
+
+    except Exception as e:
+        print(f"[SERVICE] Erro ao calcular avg_idle_duration: {e}")
+        raise e
