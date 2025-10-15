@@ -16,8 +16,8 @@ def findAllLectures():
 def createLecture():
     try:
         data = request.get_json()
-        lectureController.createLecture(data)
-        return jsonify({"message": "Aula cadastrada com sucesso"}), 201
+        lecture = lectureController.createLecture(data)
+        return jsonify(lecture), 201
     except Exception as e:
         return jsonify({"[ROUTES]error": str(e)}), 500
 
