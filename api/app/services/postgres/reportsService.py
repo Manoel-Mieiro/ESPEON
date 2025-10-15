@@ -111,6 +111,9 @@ def populateReportMetrics(report: object):
     pct_enabled_camera, pct_enabled_mic = calculateCameraMicUsage(traces)
     avg_idle_duration = calculateAvgIdle(traces)
     avg_attention_span = calculateAvgAttentionSpan(traces, total_time_watched, total_students, avg_idle_duration)
+    min_idle_duration, max_idle_duration = getIdleMinMax(traces)
+    min_attention_span, max_attention_span = getAttentionSpanMinMax(traces, total_time_watched, total_students)
+
 
     # Atualiza o objeto report
     report._total_students = total_students
@@ -120,6 +123,10 @@ def populateReportMetrics(report: object):
     report._pct_enabled_mic = pct_enabled_mic
     report._avg_idle_duration = avg_idle_duration
     report._avg_attention_span = avg_attention_span
+    report._min_idle_duration = min_idle_duration
+    report._max_idle_duration = max_idle_duration
+    report._min_attention_span = min_attention_span
+    report._max_attention_span = max_attention_span
 
     return report
 
@@ -380,7 +387,6 @@ def getAvgLectureDurationMinMax(lectures):
     except Exception as e:
         print(f"[SERVICE] Erro em getAvgLectureDurationMinMax: {e}")
         return 0.0, 0.0
-
 
 def getIdleMinMax(traces):
     """
