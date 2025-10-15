@@ -12,6 +12,7 @@ export async function formatLectureString(data) {
     `${CONFIG.API_BASE_URL}${CONFIG.USERS_ENDPOINT}/${data.teacher_id}`
   );
 
+  const lectureId = data.lecture_id;
   const subjectId = data.subject_id;
   const subject = subjectDetails.name;
   const teacher = teacherDetails.email;
@@ -19,5 +20,5 @@ export async function formatLectureString(data) {
   console.log(`SUBJECT: ${subject}`);
   console.log(`Teacher: ${teacher}`);
 
-  return `[${subjectId}] ${subject}: ${teacher}`;
+  return `[${lectureId}] ${subject}: ${teacher}`;
 }
