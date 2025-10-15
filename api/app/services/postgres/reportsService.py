@@ -364,3 +364,69 @@ def calculateAvgAttentionSpan(traces, total_time_watched: float, total_students:
     except Exception as e:
         print(f"[SERVICE] Erro ao calcular avg_attention_span: {e}")
         return 0.0
+
+def getAvgLectureDurationMinMax(lectures):
+    """
+    Recebe uma lista de aulas (cada aula com period_start e period_end) e retorna
+    (min_duration, max_duration) em minutos.
+    """
+    try:
+        if not lectures:
+            return 0.0, 0.0
+        
+        durations = [(l['period_end'] - l['period_start']).total_seconds() / 60 for l in lectures]
+        return round(min(durations), 2), round(max(durations), 2)
+    
+    except Exception as e:
+        print(f"[SERVICE] Erro em getAvgLectureDurationMinMax: {e}")
+        return 0.0, 0.0
+
+
+def getIdleMinMax(traces):
+    """
+    Recebe uma lista de traces e retorna (min_idle, max_idle) em minutos.
+    """
+    try:
+        if not traces:
+            return 0.0, 0.0
+
+        idle_durations = []
+        for trace in traces:
+            ts_str = trace.get("timestamp")
+            last_access_str = trace.get("lectureTabLastAccessed")
+            if not ts_str or not last_access_str:
+                continue
+            ts_ms = timeStrToEpochMs(ts_str)
+            last_access_ms = timeStrToEpochMs(last_access_str)
+            idle_min = (last_access_ms - ts_ms) / (1000 * 60)
+            if idle_min >= 0:
+                idle_durations.append(idle_min)
+        
+        if not idle_durations:
+            return 0.0, 0.0
+
+        return round(min(idle_durations), 2), round(max(idle_durations), 2)
+
+    except Exception as e:
+        print(f"[SERVICE] Erro em getAvgIdleMinMax: {e}")
+        return 0.0, 0.0
+
+def getAttentionSpanMinMax(traces, total_time_watched, total_students):
+    """
+    Recebe traces, total_time_watched e total_students e retorna
+    (min_attention, max_attention) em minutos.
+    """
+    try:
+        if total_students <= 0 or not traces:
+            return 0.0, 0.0
+
+        avg_idle_duration = calculateAvgIdle(traces)
+        avg_watch_duration = total_time_watched / total_students
+        attention = avg_watch_duration - avg_idle_duration
+        attention = max(attention, 0.0)
+
+        return round(attention, 2), round(attention, 2)
+
+    except Exception as e:
+        print(f"[SERVICE] Erro em getAvgAttentionSpanMinMax: {e}")
+        return 0.0, 0.0
