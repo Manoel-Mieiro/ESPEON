@@ -25,16 +25,20 @@ export async function submitLecture(component) {
 
       chrome.storage.session.set({ lecture: clipboardData });
 
-      // Envia para a API
       const response = await api.callAPI(
         "POST",
         `${CONFIG.API_BASE_URL}${CONFIG.LECTURES_ENDPOINT}`,
         clipboardData
       );
 
+      const lectureContent = {
+        ...clipboardData,
+        lecture_id: response.lecture_id,
+      };
+
       // Atualiza a view
-      handleView(clipboardData);
-      await fillWithTitle(clipboardData, lectureField);
+      handleView(lectureContent);
+      await fillWithTitle(lectureContent, lectureField);
       triggerViewHandling(backBtn);
 
       chrome.runtime.sendMessage({
@@ -73,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.session.get(["lecture"], (result) => {
     if (result.lecture) {
       clipboardData = result.lecture;
-      console.log(`clipboardData: ${result.lecture}`)
+      console.log(`clipboardData: ${result.lecture}`);
       lectureField = document.getElementById("lecture_content");
       backBtn = document.getElementById("back_lecture");
 
