@@ -1,5 +1,6 @@
 from app.services.postgres import reportsService
 from app.dto.postgres.reports import ReportDTO
+from app.repository.postgres.lecturesRepository import findOneLecture
 
 
 def findAllReports():
@@ -12,9 +13,15 @@ def findAllReports():
 
 def createReport(data):
     try:
+        lecture = findOneLecture(data["lecture_id"])
+        if not lecture:
+            raise Exception(f"Lecture {data['lecture_id']} não encontrada")
+
+        subject_id = lecture["subject_id"]
+
         rep_dto = ReportDTO(
             lecture_id=data["lecture_id"],
-            subject_id=data["subject_id"],
+            subject_id=subject_id,
             total_students=data.get("total_students", 0),
             total_time_watched=data.get("total_time_watched", 0),
             avg_lecture_duration=data.get("avg_lecture_duration"),
