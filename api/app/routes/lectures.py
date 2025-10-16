@@ -16,8 +16,8 @@ def findAllLectures():
 def createLecture():
     try:
         data = request.get_json()
-        lectureController.createLecture(data)
-        return jsonify({"message": "Aula cadastrada com sucesso"}), 201
+        lecture = lectureController.createLecture(data)
+        return jsonify(lecture), 201
     except Exception as e:
         return jsonify({"[ROUTES]error": str(e)}), 500
 
@@ -28,6 +28,14 @@ def findOneLecture(_id):
         return jsonify(lectureController.findOneLecture(_id))
     except Exception as e:
         return jsonify({"[ROUTES]error": str(e)}), 500
+
+
+@lectures_bp.route("/lectures/subject/<subject_id>", methods=["GET"])
+def getLecturesBySubject(subject_id):
+    try:
+        return jsonify(lectureController.findLecturesBySubject(subject_id))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @lectures_bp.route("/lectures/<_id>", methods=["PUT"])

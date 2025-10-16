@@ -1,6 +1,5 @@
 from bson import ObjectId
 
-
 class Traces:
     def __init__(
         self,
@@ -18,6 +17,11 @@ class Traces:
         lastAccessed: str,
         timestamp: str,
         event: str,
+        lectureMuted: bool = False,
+        lectureTabState: str = None,
+        lectureTabLastAccessed: str = None,
+        lectureAudible: bool = None,
+        lectureMutedInfoReason: str = None,
         _id: ObjectId = None
     ):
         self._id = _id
@@ -35,6 +39,11 @@ class Traces:
         self.lastAccessed = lastAccessed
         self.timestamp = timestamp
         self.event = event
+        self.lectureMuted = lectureMuted
+        self.lectureTabState = lectureTabState
+        self.lectureTabLastAccessed = lectureTabLastAccessed
+        self.lectureAudible = lectureAudible
+        self.lectureMutedInfoReason = lectureMutedInfoReason
 
     def to_dict(self):
         data = {
@@ -52,6 +61,11 @@ class Traces:
             "lastAccessed": self.lastAccessed,
             "timestamp": self.timestamp,
             "event": self.event,
+            "lectureMuted": self.lectureMuted,
+            "lectureTabState": self.lectureTabState,
+            "lectureTabLastAccessed": self.lectureTabLastAccessed,
+            "lectureAudible": self.lectureAudible,
+            "lectureMutedInfoReason": self.lectureMutedInfoReason,
         }
         if self._id:
             data["_id"] = str(self._id)
@@ -74,5 +88,10 @@ class Traces:
             lastAccessed=data["lastAccessed"],
             timestamp=data["timestamp"],
             event=data["event"],
+            lectureMuted=data.get("lectureMuted", False),
+            lectureTabState=data.get("lectureTabState"),
+            lectureTabLastAccessed=data.get("lectureTabLastAccessed"),
+            lectureAudible=data.get("lectureAudible"),
+            lectureMutedInfoReason=data.get("lectureMutedInfoReason"),
             _id=data.get("_id")
         )

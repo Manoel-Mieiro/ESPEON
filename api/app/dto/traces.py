@@ -19,6 +19,11 @@ class TracesDTO:
         timestamp: str,
         event: str,
         lectureId: str = None,
+        lectureMuted: bool = False,
+        lectureTabState: str = None,
+        lectureTabLastAccessed: str = None,
+        lectureAudible: bool = None,
+        lectureMutedInfoReason: str = None,
     ):
         self.lectureId = lectureId
         self.onlineClass = onlineClass
@@ -34,6 +39,11 @@ class TracesDTO:
         self.lastAccessed = lastAccessed
         self.timestamp = timestamp
         self.event = event
+        self.lectureMuted = lectureMuted
+        self.lectureTabState = lectureTabState
+        self.lectureTabLastAccessed = lectureTabLastAccessed
+        self.lectureAudible = lectureAudible
+        self.lectureMutedInfoReason = lectureMutedInfoReason
 
     def to_standard(self):
         return Traces(
@@ -51,4 +61,9 @@ class TracesDTO:
             lastAccessed=self.lastAccessed,
             timestamp=self.timestamp,
             event=self.event,
+            lectureMuted=self.lectureMuted,
+            lectureTabState=self.lectureTabState,
+            lectureTabLastAccessed=self.lectureTabLastAccessed,
+            lectureAudible=self.lectureAudible,
+            lectureMutedInfoReason=self.lectureMutedInfoReason,
         )

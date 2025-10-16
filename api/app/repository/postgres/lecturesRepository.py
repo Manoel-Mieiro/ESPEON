@@ -125,3 +125,36 @@ def deleteLecture(lecture_id):
         conn.rollback()
         print("[REPOSITORY]Erro ao remover aula:", e)
         raise e
+
+
+def findLecturesBySubject(subject_id: str):
+    """
+    Retorna todas as aulas de uma disciplina pelo subject_id
+    """
+    try:
+        query = """
+            SELECT lecture_id, subject_id, teacher_id, date_lecture, period_start, period_end
+            FROM lecture
+            WHERE subject_id = %s
+            ORDER BY date_lecture DESC
+        """
+        cursor.execute(query, (subject_id,))
+        rows = cursor.fetchall()
+        lectures_list = []
+
+        for row in rows:
+            lecture = Lecture(
+                lecture_id=row[0],
+                subject_id=row[1],
+                teacher_id=row[2],
+                date_lecture=row[3],
+                period_start=row[4],
+                period_end=row[5]
+            )
+            lectures_list.append(lecture.to_dict())
+
+        return lectures_list
+    except Exception as e:
+        print(
+            f"[REPOSITORY] Erro ao buscar aulas por subject_id {subject_id}: {e}")
+        raise e
