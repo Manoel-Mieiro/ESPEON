@@ -1,5 +1,9 @@
 import app.repository.postgres.reportsRepository as reports
 from datetime import datetime, timedelta
+from io import BytesIO
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
 import requests
 import os
 
@@ -436,3 +440,59 @@ def getAttentionSpanMinMax(traces, total_time_watched, total_students):
     except Exception as e:
         print(f"[SERVICE] Erro em getAvgAttentionSpanMinMax: {e}")
         return 0.0, 0.0
+
+def generateReportPdf(report):
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    # Cabeçalho
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(2 * cm, height - 2 * cm, f"Relatório da Aula #{report._lecture_id}")
+
+    # Informações gerais
+    c.setFont("Helvetica", 12)
+    y = height - 3.5 * cm
+    line_height = 0.9 * cm
+
+    c.drawString(2 * cm, y, f"Disciplina ID: {report._subject_id}"); y -= line_height
+    c.drawString(2 * cm, y, f"Total de alunos: {report._total_students}"); y -= line_height
+    c.drawString(2 * cm, y, f"Tempo total assistido: {report._total_time_watched or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Média de duração da aula: {report._avg_lecture_duration or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Duração ociosa média: {report._avg_idle_duration or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Atividade média (atenção): {report._avg_attention_span or 0:.0f} min"); y -= line_height
+
+    # Seção de recursos
+    c.setFont("Helvetica-Bold", 14)
+    y -= 0.5 * cm
+    c.drawString(2 * cm, y, "PERIFÉRICOS"); y -= line_height
+
+    c.setFont("Helvetica", 12)
+    c.drawString(2 * cm, y, f"% tempo com câmera ligada: {report._pct_enabled_camera or 0:.0f}%"); y -= line_height
+    c.drawString(2 * cm, y, f"% tempo com microfone ligado: {report._pct_enabled_mic or 0:.0f}%"); y -= line_height
+    c.drawString(2 * cm, y, f"Média de streaming de câmera: {report._avg_cam_streaming_span or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Média de streaming de microfone: {report._avg_mic_streaming_span or 0:.0f} min"); y -= line_height
+
+    # Estatísticas gerais
+    c.setFont("Helvetica-Bold", 14)
+    y -= 0.5 * cm
+    c.drawString(2 * cm, y, "PICOS E DECLIVES"); y -= line_height
+
+    c.setFont("Helvetica", 12)
+    c.drawString(2 * cm, y, f"Mín. duração da aula: {report._min_lecture_duration or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Máx. duração da aula: {report._max_lecture_duration or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Mín. tempo ocioso: {report._min_idle_duration or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Máx. tempo ocioso: {report._max_idle_duration or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Mín. atenção: {report._min_attention_span or 0:.0f} min"); y -= line_height
+    c.drawString(2 * cm, y, f"Máx. atenção: {report._max_attention_span or 0:.0f} min"); y -= line_height
+
+    # Rodapé
+    c.setFont("Helvetica-Oblique", 10)
+    c.drawString(2 * cm, 2 * cm, f"Emitido em: {report._issued_at.strftime('%d/%m/%Y %H:%M')}")
+
+
+    c.showPage()
+    c.save()
+    buffer.seek(0)
+
+    return buffer

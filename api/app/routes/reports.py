@@ -44,3 +44,10 @@ def delete_report(report_id):
         return jsonify(reportController.deleteReport(report_id)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@report_bp.route("/pdf/<report_id>", methods=["GET"])
+def get_report_pdf(report_id):
+    try:
+        return reportController.getReportPdf(report_id)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
