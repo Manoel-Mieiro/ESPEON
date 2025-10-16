@@ -1,6 +1,5 @@
 from app.models.postgres.reports import Report
-from datetime import datetime
-
+from datetime import datetime, timedelta
 
 class ReportDTO:
     def __init__(
@@ -24,26 +23,6 @@ class ReportDTO:
         max_attention_span: float = None,
         issued_at: str = None
     ):
-        """
-        :param lecture_id: UUID da aula
-        :param subject_id: UUID da disciplina
-        :param total_students: Total de alunos participantes
-        :param total_time_watched: Tempo total assistido (minutos)
-        :param avg_lecture_duration: Duração média das aulas da disciplina (minutos)
-        :param avg_idle_duration: Tempo médio ocioso dos alunos (minutos)
-        :param avg_attention_span: Tempo médio de atenção dos alunos (minutos)
-        :param pct_enabled_camera: Percentual médio de câmeras ligadas (%)
-        :param pct_enabled_mic: Percentual médio de microfones ligados (%)
-        :param avg_cam_streaming_span: Duração média do streaming de câmera (minutos)
-        :param avg_mic_streaming_span: Duração média do streaming de microfone (minutos)
-        :param min_lecture_duration: Menor duração registrada de aula (minutos)
-        :param max_lecture_duration: Maior duração registrada de aula (minutos)
-        :param min_idle_duration: Menor tempo ocioso registrado (minutos)
-        :param max_idle_duration: Maior tempo ocioso registrado (minutos)
-        :param min_attention_span: Menor tempo médio de atenção (minutos)
-        :param max_attention_span: Maior tempo médio de atenção (minutos)
-        :param issued_at: Data/hora de emissão no formato 'YYYY-MM-DD HH:MM'
-        """
         if not lecture_id or not subject_id:
             raise ValueError("lecture_id and subject_id are required")
 
@@ -64,8 +43,15 @@ class ReportDTO:
         self.max_idle_duration = max_idle_duration
         self.min_attention_span = min_attention_span
         self.max_attention_span = max_attention_span
-        self.issued_at = issued_at
 
+        # Ajusta issued_at para fuso horário de Brasília
+        if isinstance(issued_at, str):
+            dt = datetime.strptime(issued_at, "%Y-%m-%d %H:%M:%S")
+            self.issued_at = dt - timedelta(hours=3)  # subtrai 3h para GMT-3
+        elif isinstance(issued_at, datetime):
+            self.issued_at = issued_at - timedelta(hours=3)
+        else:
+            self.issued_at = datetime.utcnow() - timedelta(hours=3)
 
     def to_standard(self):
         """
