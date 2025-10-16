@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 const reportsContainer = document.querySelector(".form-container");
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 1;
 let currentPage = 1;
 let filteredReports = [];
 
@@ -74,6 +74,7 @@ function renderReports() {
                 <p>Tempo total assistido: ${Math.round(
                   r.total_time_watched
                 )} min</p>
+                <p>Data: ${r.issued_at} min</p>
             </div>
         </div>
     </div>
