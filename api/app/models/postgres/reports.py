@@ -64,7 +64,7 @@ class Report:
             "max_idle_duration": self._max_idle_duration,
             "min_attention_span": self._min_attention_span,
             "max_attention_span": self._max_attention_span,
-            "issued_at": self._issued_at
+            "issued_at": self._issued_at.strftime("%d/%m/%Y %H:%M")
         }
         if self._id:
             data["_id"] = str(self._id)
