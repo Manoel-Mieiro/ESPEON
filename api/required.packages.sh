@@ -8,6 +8,9 @@ pip install psycopg2-binary
 # optional
 pip install python-dotenv
 
+# reportLab
+pip install reportlab
+
 # on ubuntu
 #python3 -m pip install --user Flask
 #python3 -m pip install --user python-dotenv
