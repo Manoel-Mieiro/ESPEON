@@ -1,3 +1,5 @@
+from flask import send_file
+from app.models.postgres.reports import Report
 from app.services.postgres import reportsService
 from app.dto.postgres.reports import ReportDTO
 from app.repository.postgres.lecturesRepository import findOneLecture
@@ -78,3 +80,17 @@ def deleteReport(report_id):
     except Exception as e:
         print("[CONTROLLER] Error deleting report:", e)
         raise e
+
+
+def getReportPdf(report_id):
+    report_data = reportsService.findOneReport(report_id)
+    report = Report(**report_data)
+    pdf_stream = reportsService.generateReportPdf(report)
+    pdf_stream.seek(0)
+    
+    return send_file(
+        pdf_stream,
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="relatorio.pdf"
+    )
