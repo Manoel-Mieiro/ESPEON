@@ -92,5 +92,5 @@ def getReportPdf(report_id):
         pdf_stream,
         mimetype="application/pdf",
         as_attachment=True,
-        download_name="relatorio.pdf"
+        download_name=f"relatorio_{report_id}.pdf"
     )
