@@ -42,7 +42,7 @@ class ReportDTO:
         :param max_idle_duration: Maior tempo ocioso registrado (minutos)
         :param min_attention_span: Menor tempo médio de atenção (minutos)
         :param max_attention_span: Maior tempo médio de atenção (minutos)
-        :param issued_at: Data/hora de emissão no formato 'YYYY-MM-DD HH:MM:SS' (opcional)
+        :param issued_at: Data/hora de emissão no formato 'YYYY-MM-DD HH:MM'
         """
         if not lecture_id or not subject_id:
             raise ValueError("lecture_id and subject_id are required")
@@ -64,11 +64,8 @@ class ReportDTO:
         self.max_idle_duration = max_idle_duration
         self.min_attention_span = min_attention_span
         self.max_attention_span = max_attention_span
+        self.issued_at = issued_at
 
-        self.issued_at = (
-            datetime.strptime(
-                issued_at, "%Y-%m-%d %H:%M:%S") if issued_at else datetime.utcnow()
-        )
 
     def to_standard(self):
         """
