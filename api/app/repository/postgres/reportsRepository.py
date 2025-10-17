@@ -5,9 +5,10 @@ from app.models.postgres.reports import Report
 cursor = conn.cursor()
 
 
+
 def createReport(report: Report):
     """
-    Cria um novo relatório agregado (por aula/disciplina)
+    Cria um novo relatório agregado (por aula/disciplina).
     """
     try:
         report_id = str(uuid.uuid4())
@@ -27,7 +28,7 @@ def createReport(report: Report):
                 avg_mic_streaming_span,
                 issued_at
             ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            RETURNING report_id
+            RETURNING *;
         """
         cursor.execute(query, (
             report_id,
@@ -45,8 +46,10 @@ def createReport(report: Report):
             report._issued_at
         ))
         conn.commit()
-        report._id = report_id
-        return report.to_dict()
+        row = cursor.fetchone()
+        if row:
+            columns = [desc[0] for desc in cursor.description]
+            return dict(zip(columns, row))
     except Exception as e:
         conn.rollback()
         print("[REPOSITORY] Erro ao criar report:", e)
@@ -167,13 +170,6 @@ def findOneReport(report_id):
             _id=row[0]
         )
 
-        # report_dict = report.to_dict()
-        # report_dict["subject_name"] = row[3]
-        # report_dict["date_lecture"] = row[4]
-        # report_dict["teacher"] = row[5]
-
-        # return report_dict
-
         extras = {
             "subject_name": row[3],
             "date_lecture": row[4],
@@ -187,6 +183,21 @@ def findOneReport(report_id):
         raise e
 
 
+def getReportByLectureId(lecture_id: str):
+    """
+    Retorna o relatório pelo lecture_id, se existir.
+    """
+    try:
+        query = "SELECT * FROM report WHERE lecture_id = %s"
+        cursor.execute(query, (lecture_id,))
+        result = cursor.fetchone()
+        if result:
+            columns = [desc[0] for desc in cursor.description]
+            return dict(zip(columns, result))
+        return None
+    except Exception as e:
+        print("[REPOSITORY] Erro ao buscar relatório:", e)
+        raise e
 
 def deleteReport(report_id):
     """
@@ -200,4 +211,38 @@ def deleteReport(report_id):
     except Exception as e:
         conn.rollback()
         print("[REPOSITORY] Erro ao remover report:", e)
+        raise e
+
+def updateReport(report_id: str, fields: dict):
+    """
+    Atualiza campos de um relatório existente.
+    """
+    try:
+        if not fields or not isinstance(fields, dict):
+            raise ValueError("fields deve ser um dicionário com os campos a atualizar.")
+
+        set_clause = ", ".join([f"{key} = %s" for key in fields.keys()])
+        values = list(fields.values()) + [report_id]
+
+        query = f"""
+            UPDATE report
+            SET {set_clause}
+            WHERE report_id = %s
+            RETURNING *;
+        """
+
+        cursor.execute(query, tuple(values))
+        conn.commit()
+
+        updated = cursor.fetchone()
+        if updated:
+            columns = [desc[0] for desc in cursor.description]
+            return dict(zip(columns, updated))
+        else:
+            print(f"[REPOSITORY] Nenhum relatório encontrado com report_id={report_id}.")
+            return None
+
+    except Exception as e:
+        print("[REPOSITORY] Erro ao atualizar relatório:", e)
+        conn.rollback()
         raise e
