@@ -167,12 +167,20 @@ def findOneReport(report_id):
             _id=row[0]
         )
 
-        report_dict = report.to_dict()
-        report_dict["subject_name"] = row[3]
-        report_dict["date_lecture"] = row[4]
-        report_dict["teacher"] = row[5]
+        # report_dict = report.to_dict()
+        # report_dict["subject_name"] = row[3]
+        # report_dict["date_lecture"] = row[4]
+        # report_dict["teacher"] = row[5]
 
-        return report_dict
+        # return report_dict
+
+        extras = {
+            "subject_name": row[3],
+            "date_lecture": row[4],
+            "teacher": row[5]
+        }
+
+        return report, extras
 
     except Exception as e:
         print("[REPOSITORY] Erro ao buscar report:", e)
