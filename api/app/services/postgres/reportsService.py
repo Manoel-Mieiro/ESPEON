@@ -455,7 +455,8 @@ def generateReportPdf(report):
     y = height - 3.5 * cm
     line_height = 0.9 * cm
 
-    c.drawString(2 * cm, y, f"Disciplina ID: {report._subject_id}"); y -= line_height
+    c.drawString(2 * cm, y, f"Disciplina: {report._subject_name}"); y -= line_height
+    c.drawString(2 * cm, y, f"Docente: {report._teacher}"); y -= line_height
     c.drawString(2 * cm, y, f"Total de alunos: {report._total_students}"); y -= line_height
     c.drawString(2 * cm, y, f"Tempo total assistido: {report._total_time_watched or 0:.0f} min"); y -= line_height
     c.drawString(2 * cm, y, f"Média de duração da aula: {report._avg_lecture_duration or 0:.0f} min"); y -= line_height
@@ -488,7 +489,7 @@ def generateReportPdf(report):
 
     # Rodapé
     c.setFont("Helvetica-Oblique", 10)
-    c.drawString(2 * cm, 2 * cm, f"Emitido em: {report._issued_at.strftime('%d/%m/%Y %H:%M')}")
+    c.drawString(2 * cm, 2 * cm, f"Emitido em: {report._issued_at}")
 
 
     c.showPage()
