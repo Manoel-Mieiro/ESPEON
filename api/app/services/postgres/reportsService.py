@@ -1,9 +1,12 @@
 import app.repository.postgres.reportsRepository as reports
 from datetime import datetime, timedelta
 from io import BytesIO
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
+from reportlab.lib.enums import TA_LEFT
+from reportlab.platypus import Paragraph
 import requests
 import os
 
@@ -74,7 +77,11 @@ def createReport(report):
 
 def findOneReport(report_id: str):
     try:
-        return reports.findOneReport(report_id)
+        report, extras  = reports.findOneReport(report_id)
+        final = populateReportMetrics(report)
+        result = final.to_dict()
+        result.update(extras)
+        return result
     except Exception as e:
         print("[SERVICE] Error fetching report:", e)
         raise e
@@ -114,10 +121,14 @@ def populateReportMetrics(report: object):
     avg_lecture_duration = calculateAvgLectureDuration(report._subject_id)
     pct_enabled_camera, pct_enabled_mic = calculateCameraMicUsage(traces)
     avg_idle_duration = calculateAvgIdle(traces)
-    avg_attention_span = calculateAvgAttentionSpan(traces, total_time_watched, total_students, avg_idle_duration)
+    avg_attention_span = calculateAvgAttentionSpan(
+        traces, total_time_watched, total_students, avg_idle_duration)
     min_idle_duration, max_idle_duration = getIdleMinMax(traces)
-    min_attention_span, max_attention_span = getAttentionSpanMinMax(traces, total_time_watched, total_students)
-
+    min_attention_span, max_attention_span = getAttentionSpanMinMax(
+        traces, total_time_watched, total_students)
+    
+    lecture_alias = traces[0].get("classTitle") if traces else None
+    print(f"lecture_alias: {lecture_alias}")
 
     # Atualiza o objeto report
     report._total_students = total_students
@@ -131,14 +142,15 @@ def populateReportMetrics(report: object):
     report._max_idle_duration = max_idle_duration
     report._min_attention_span = min_attention_span
     report._max_attention_span = max_attention_span
+    report._lecture_alias = lecture_alias
 
     return report
-
 
 
 """
 Campos do Relatório
 """
+
 
 def calculateTotalStudents(traces):
     """
@@ -282,13 +294,14 @@ def calculateCameraMicUsage(traces):
         pct_camera = round(camera_on / total * 100, 2)
         pct_mic = round(mic_on / total * 100, 2)
 
-        print(f"[SERVICE] Lecture {lecture_id}: pct_enabled_camera={pct_camera}%, pct_enabled_mic={pct_mic}%")
+        print(
+            f"[SERVICE] Lecture {lecture_id}: pct_enabled_camera={pct_camera}%, pct_enabled_mic={pct_mic}%")
         return pct_camera, pct_mic
 
     except Exception as e:
-        print(f"[SERVICE] Erro ao calcular pct_camera/pct_mic para lecture_id={lecture_id}: {e}")
+        print(
+            f"[SERVICE] Erro ao calcular pct_camera/pct_mic para lecture_id={lecture_id}: {e}")
         return 0.0, 0.0
-
 
 
 def calculateAvgIdle(traces) -> float:
@@ -308,7 +321,8 @@ def calculateAvgIdle(traces) -> float:
             return 0.0
 
         lecture_id = traces[0].get("lecture_id") if traces else "desconhecido"
-        print(f"[SERVICE] Calculando avg_idle_duration para lecture_id={lecture_id}")
+        print(
+            f"[SERVICE] Calculando avg_idle_duration para lecture_id={lecture_id}")
 
         idle_durations = []
         for trace in traces:
@@ -317,7 +331,7 @@ def calculateAvgIdle(traces) -> float:
             if not ts_str or not last_access_str:
                 continue
 
-            # converte para epoch ms 
+            # converte para epoch ms
             ts_ms = timeStrToEpochMs(ts_str)
             last_access_ms = timeStrToEpochMs(last_access_str)
 
@@ -327,11 +341,13 @@ def calculateAvgIdle(traces) -> float:
                 idle_durations.append(idle_min)
 
         if not idle_durations:
-            print(f"[SERVICE] Nenhum idle válido encontrado para {lecture_id}.")
+            print(
+                f"[SERVICE] Nenhum idle válido encontrado para {lecture_id}.")
             return 0.0
 
         avg_idle = sum(idle_durations) / len(idle_durations)
-        print(f"[SERVICE] avg_idle_duration calculado: {avg_idle:.2f} minutos.")
+        print(
+            f"[SERVICE] avg_idle_duration calculado: {avg_idle:.2f} minutos.")
         return round(avg_idle, 2)
 
     except Exception as e:
@@ -369,12 +385,14 @@ def calculateAvgAttentionSpan(traces, total_time_watched: float, total_students:
         avg_attention_span = max(avg_attention_span, 0.0)
 
         lecture_id = traces[0].get("lecture_id") if traces else "desconhecido"
-        print(f"[SERVICE] Lecture {lecture_id}: avg_attention_span calculado = {avg_attention_span:.2f} minutos")
+        print(
+            f"[SERVICE] Lecture {lecture_id}: avg_attention_span calculado = {avg_attention_span:.2f} minutos")
         return round(avg_attention_span, 2)
 
     except Exception as e:
         print(f"[SERVICE] Erro ao calcular avg_attention_span: {e}")
         return 0.0
+
 
 def getAvgLectureDurationMinMax(lectures):
     """
@@ -384,13 +402,15 @@ def getAvgLectureDurationMinMax(lectures):
     try:
         if not lectures:
             return 0.0, 0.0
-        
-        durations = [(l['period_end'] - l['period_start']).total_seconds() / 60 for l in lectures]
+
+        durations = [(l['period_end'] - l['period_start']
+                      ).total_seconds() / 60 for l in lectures]
         return round(min(durations), 2), round(max(durations), 2)
-    
+
     except Exception as e:
         print(f"[SERVICE] Erro em getAvgLectureDurationMinMax: {e}")
         return 0.0, 0.0
+
 
 def getIdleMinMax(traces):
     """
@@ -411,7 +431,7 @@ def getIdleMinMax(traces):
             idle_min = (last_access_ms - ts_ms) / (1000 * 60)
             if idle_min >= 0:
                 idle_durations.append(idle_min)
-        
+
         if not idle_durations:
             return 0.0, 0.0
 
@@ -420,6 +440,7 @@ def getIdleMinMax(traces):
     except Exception as e:
         print(f"[SERVICE] Erro em getAvgIdleMinMax: {e}")
         return 0.0, 0.0
+
 
 def getAttentionSpanMinMax(traces, total_time_watched, total_students):
     """
@@ -446,54 +467,130 @@ def generateReportPdf(report):
     c = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
 
-    # Cabeçalho
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(2 * cm, height - 2 * cm, f"Relatório da Aula #{report._lecture_id}")
+    styles = getSampleStyleSheet()
+
+    # Estilos
+    title_style = ParagraphStyle(
+        'Title',
+        parent=styles['Heading1'],
+        fontName='Helvetica-Bold',
+        fontSize=16,
+        leading=18,
+        spaceAfter=6,
+        alignment=TA_LEFT
+    )
+
+    subtitle_style = ParagraphStyle(
+        'Subtitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Oblique',
+        underline=True,
+        fontSize=12,
+        leading=14,
+        spaceAfter=10,
+        alignment=TA_LEFT,
+        wordWrap='CJK'
+    )
+
+    section_style = ParagraphStyle(
+        'Section',
+        parent=styles['Heading2'],
+        fontName='Helvetica-Bold',
+        fontSize=14,
+        leading=16,
+        spaceBefore=8,
+        spaceAfter=4,
+        alignment=TA_LEFT
+    )
+
+    normal_style = ParagraphStyle(
+        'Normal',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=12,
+        leading=14,
+        spaceAfter=2
+    )
+
+    # Posição inicial
+    x = 2 * cm
+    y = height - 2 * cm
+
+    # Título
+    p = Paragraph("Relatório da Aula", title_style)
+    p.wrapOn(c, width - 4*cm, 3*cm)
+    p.drawOn(c, x, y)
+    y -= p.height + 0.5*cm
+
+    # Subtítulo
+    p = Paragraph(report._lecture_alias or "Sem título", subtitle_style)
+    p.wrapOn(c, width - 4*cm, 3*cm)
+    p.drawOn(c, x, y)
+    y -= p.height + 0.5*cm
 
     # Informações gerais
-    c.setFont("Helvetica", 12)
-    y = height - 3.5 * cm
-    line_height = 0.9 * cm
+    info_lines = [
+        f"Disciplina: {report._subject_name}",
+        f"Docente: {report._teacher}",
+        f"Total de alunos: {report._total_students}",
+        f"Tempo total assistido: {report._total_time_watched or 0:.0f} min",
+        f"Média de duração da aula: {report._avg_lecture_duration or 0:.0f} min",
+        f"Duração ociosa média: {report._avg_idle_duration or 0:.0f} min",
+        f"Atividade média (atenção): {report._avg_attention_span or 0:.0f} min"
+    ]
 
-    c.drawString(2 * cm, y, f"Disciplina: {report._subject_name}"); y -= line_height
-    c.drawString(2 * cm, y, f"Docente: {report._teacher}"); y -= line_height
-    c.drawString(2 * cm, y, f"Total de alunos: {report._total_students}"); y -= line_height
-    c.drawString(2 * cm, y, f"Tempo total assistido: {report._total_time_watched or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Média de duração da aula: {report._avg_lecture_duration or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Duração ociosa média: {report._avg_idle_duration or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Atividade média (atenção): {report._avg_attention_span or 0:.0f} min"); y -= line_height
+    for line in info_lines:
+        p = Paragraph(line, normal_style)
+        p.wrapOn(c, width - 4*cm, 2*cm)
+        p.drawOn(c, x, y)
+        y -= p.height + 0.2*cm
 
-    # Seção de recursos
-    c.setFont("Helvetica-Bold", 14)
-    y -= 0.5 * cm
-    c.drawString(2 * cm, y, "PERIFÉRICOS"); y -= line_height
+    # Seção PERIFÉRICOS
+    p = Paragraph("PERIFÉRICOS", section_style)
+    p.wrapOn(c, width - 4*cm, 2*cm)
+    p.drawOn(c, x, y)
+    y -= p.height + 0.2*cm
 
-    c.setFont("Helvetica", 12)
-    c.drawString(2 * cm, y, f"% tempo com câmera ligada: {report._pct_enabled_camera or 0:.0f}%"); y -= line_height
-    c.drawString(2 * cm, y, f"% tempo com microfone ligado: {report._pct_enabled_mic or 0:.0f}%"); y -= line_height
-    c.drawString(2 * cm, y, f"Média de streaming de câmera: {report._avg_cam_streaming_span or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Média de streaming de microfone: {report._avg_mic_streaming_span or 0:.0f} min"); y -= line_height
+    peripherals_lines = [
+        f"% tempo com câmera ligada: {report._pct_enabled_camera or 0:.0f}%",
+        f"% tempo com microfone ligado: {report._pct_enabled_mic or 0:.0f}%",
+        f"Média de streaming de câmera: {report._avg_cam_streaming_span or 0:.0f} min",
+        f"Média de streaming de microfone: {report._avg_mic_streaming_span or 0:.0f} min"
+    ]
 
-    # Estatísticas gerais
-    c.setFont("Helvetica-Bold", 14)
-    y -= 0.5 * cm
-    c.drawString(2 * cm, y, "PICOS E DECLIVES"); y -= line_height
+    for line in peripherals_lines:
+        p = Paragraph(line, normal_style)
+        p.wrapOn(c, width - 4*cm, 2*cm)
+        p.drawOn(c, x, y)
+        y -= p.height + 0.2*cm
 
-    c.setFont("Helvetica", 12)
-    c.drawString(2 * cm, y, f"Mín. duração da aula: {report._min_lecture_duration or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Máx. duração da aula: {report._max_lecture_duration or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Mín. tempo ocioso: {report._min_idle_duration or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Máx. tempo ocioso: {report._max_idle_duration or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Mín. atenção: {report._min_attention_span or 0:.0f} min"); y -= line_height
-    c.drawString(2 * cm, y, f"Máx. atenção: {report._max_attention_span or 0:.0f} min"); y -= line_height
+    # Seção PICOS E DECLIVES
+    p = Paragraph("PICOS E DECLIVES", section_style)
+    p.wrapOn(c, width - 4*cm, 2*cm)
+    p.drawOn(c, x, y)
+    y -= p.height + 0.2*cm
+
+    peaks_lines = [
+        f"Mín. duração da aula: {report._min_lecture_duration or 0:.0f} min",
+        f"Máx. duração da aula: {report._max_lecture_duration or 0:.0f} min",
+        f"Mín. tempo ocioso: {report._min_idle_duration or 0:.0f} min",
+        f"Máx. tempo ocioso: {report._max_idle_duration or 0:.0f} min",
+        f"Mín. atenção: {report._min_attention_span or 0:.0f} min",
+        f"Máx. atenção: {report._max_attention_span or 0:.0f} min"
+    ]
+
+    for line in peaks_lines:
+        p = Paragraph(line, normal_style)
+        p.wrapOn(c, width - 4*cm, 2*cm)
+        p.drawOn(c, x, y)
+        y -= p.height + 0.2*cm
 
     # Rodapé
-    c.setFont("Helvetica-Oblique", 10)
-    c.drawString(2 * cm, 2 * cm, f"Emitido em: {report._issued_at}")
-
+    p = Paragraph(f"Emitido em: {report._issued_at}", subtitle_style)
+    p.wrapOn(c, width - 4*cm, 2*cm)
+    p.drawOn(c, x, 2 * cm)
 
     c.showPage()
     c.save()
     buffer.seek(0)
-
     return buffer
