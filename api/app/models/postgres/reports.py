@@ -7,6 +7,9 @@ class Report:
         self,
         lecture_id: str,
         subject_id: str,
+        subject_name: str = None,
+        teacher: str = None,
+        date_lecture: datetime = None,
         total_students: int = 0,
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
@@ -28,6 +31,9 @@ class Report:
         self._id = _id
         self._lecture_id = lecture_id
         self._subject_id = subject_id
+        self._subject_name = subject_name
+        self._teacher = teacher
+        self._date_lecture = date_lecture or datetime.utcnow()
         self._total_students = total_students
         self._total_time_watched = total_time_watched
         self._avg_lecture_duration = avg_lecture_duration
@@ -46,9 +52,20 @@ class Report:
         self._issued_at = issued_at or datetime.utcnow()
 
     def to_dict(self):
+
+        def format_date(dt, fmt="%d/%m/%Y %H:%M"):
+            if isinstance(dt, datetime):
+                return dt.strftime(fmt)
+            elif isinstance(dt, str):
+                return dt  # já está no formato esperado
+            return None
+
         data = {
             "lecture_id": self._lecture_id,
             "subject_id": self._subject_id,
+            "subject_name": self._subject_name,
+            "teacher": self._teacher,
+            "date_lecture": format_date(self._date_lecture, "%d/%m/%Y"),
             "total_students": self._total_students,
             "total_time_watched": self._total_time_watched,
             "avg_lecture_duration": self._avg_lecture_duration,
@@ -64,10 +81,12 @@ class Report:
             "max_idle_duration": self._max_idle_duration,
             "min_attention_span": self._min_attention_span,
             "max_attention_span": self._max_attention_span,
-            "issued_at": self._issued_at.strftime("%d/%m/%Y %H:%M")
+            "issued_at": format_date(self._issued_at),
         }
+
         if self._id:
             data["_id"] = str(self._id)
+
         return data
 
     @staticmethod
@@ -75,6 +94,9 @@ class Report:
         return Report(
             lecture_id=data["lecture_id"],
             subject_id=data["subject_id"],
+            subject_name=data.get("subject_name"),
+            teacher=data.get("teacher"),
+            date_lecture=data.get("date_lecture"),
             total_students=data.get("total_students", 0),
             total_time_watched=data.get("total_time_watched", 0.0),
             avg_lecture_duration=data.get("avg_lecture_duration"),
