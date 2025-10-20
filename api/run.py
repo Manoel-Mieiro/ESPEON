@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-from db import seedMongo
 from app import create_app
 import os
 
@@ -13,5 +12,4 @@ app = create_app()
 
 if __name__ == "__main__":
     print("Server started at port", PORT)
-    print("Executando seed...\n", seedMongo())
     app.run(debug=False, port=PORT)
