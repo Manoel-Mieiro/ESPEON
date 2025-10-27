@@ -11,9 +11,20 @@ async function shouldRecord() {
   return recording;
 }
 
+function normalizeTeamsTitle(title) {
+  // Remove o sufixo " | Microsoft Teams"
+  title = title.replace(/\s*\|\s*Microsoft Teams\s*$/i, "");
+
+  // Divide pelos pipes e pega o último item não vazio
+  const parts = title.split("|").map(p => p.trim()).filter(Boolean);
+  return parts.length > 0 ? parts[parts.length - 1] : title;
+}
+
+
 async function validateTitle(tab) {
   let regexValidated = await chrome.storage.session.get("regexValidated");
   let meeting = await chrome.storage.session.get(["lectureLink"]);
+
   if (
     !tab.title ||
     tab.title === lastValidatedTitle ||
@@ -26,20 +37,22 @@ async function validateTitle(tab) {
   console.log("[validateTitle] tab.title =", tab.title);
   lastValidatedTitle = tab.title;
 
-  const isValid = record.isTitleValid(tab.title);
-  console.log("VALIDAÇÃO REGEX =>", isValid);
+  const normalizedTitle = normalizeTeamsTitle(tab.title);
+  console.log("[validateTitle] normalizedTitle =", normalizedTitle);
 
-  console.log("[regexValidated] =", regexValidated.regexValidated);
+  const isValid = record.isTitleValid(normalizedTitle);
+  console.log("VALIDAÇÃO REGEX =>", isValid);
 
   if (isValid && regexValidated.regexValidated === false) {
     await chrome.storage.session.set({ regexValidated: true });
     await chrome.storage.session.set({ shouldMonitor: true });
-    await chrome.storage.session.set({ entrypoint: tab.id }); //âncora da extensão
+    await chrome.storage.session.set({ entrypoint: tab.id });
     console.log("Regex válida, ativando monitoramento");
-    await chrome.storage.session.set({ recording: true }); //atualiza recording
+    await chrome.storage.session.set({ recording: true });
     console.log("GRAVAÇÃO INICIADA");
   }
 }
+
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.type === "click_event") {
