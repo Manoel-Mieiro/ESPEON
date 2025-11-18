@@ -1,5 +1,4 @@
 import { CONFIG } from "../config.js";
-const lecturesEndpoint = "http://localhost:8183/lectures2";
 
 export function fillTeacher() {
   chrome.storage.session.get("user", (result) => {
@@ -15,7 +14,7 @@ export function fillTeacher() {
 
 async function fetchSubjects() {
   try {
-    const response = await fetch(`http://localhost:8183/${CONFIG.SUBJECTS_ENDPOINT}`);
+    const response = await fetch(`${CONFIG.API_BASE_URL}${CONFIG.SUBJECTS_ENDPOINT}`);
     if (!response.ok) throw new Error("API may be unavaliable");
     return response;
   } catch (error) {
