@@ -1,4 +1,5 @@
 import app.repository.postgres.loginRepository as login
+from app.utils.time_utils import get_current_datetime
 import string
 import random
 import datetime
@@ -31,10 +32,11 @@ def updateToken(user):
     """
     try:
         tkn = generateToken()
-        generatedAt = datetime.datetime.now(datetime.timezone.utc)
+        generatedAt = get_current_datetime()
         print("[SERVICE] Token is:", tkn)
 
-        login.updateToken(user_id=user["_id"], newToken=tkn, created_at=generatedAt)
+        login.updateToken(user_id=user["_id"],
+                          newToken=tkn, created_at=generatedAt)
         sendMail(user["email"], tkn)
 
         return {"newToken": tkn}
@@ -80,5 +82,5 @@ def validateToken(created_at):
     if isinstance(created_at, str):
         created_at = datetime.datetime.fromisoformat(created_at)
 
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = get_current_datetime()
     return now > created_at + datetime.timedelta(seconds=lifespan_seconds)

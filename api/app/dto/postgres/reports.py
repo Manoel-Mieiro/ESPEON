@@ -1,3 +1,4 @@
+from app.utils.time_utils import get_current_datetime
 from app.models.postgres.reports import Report
 from datetime import datetime
 
@@ -67,7 +68,7 @@ class ReportDTO:
 
         self.issued_at = (
             datetime.strptime(
-                issued_at, "%Y-%m-%d %H:%M:%S") if issued_at else datetime.utcnow()
+                issued_at, "%Y-%m-%d %H:%M:%S") if issued_at else get_current_datetime()
         )
 
     def to_standard(self):

@@ -1,6 +1,6 @@
 from bson import ObjectId
 from datetime import datetime
-
+from app.utils.time_utils import get_current_datetime
 
 class Report:
     def __init__(
@@ -43,7 +43,7 @@ class Report:
         self._max_idle_duration = max_idle_duration
         self._min_attention_span = min_attention_span
         self._max_attention_span = max_attention_span
-        self._issued_at = issued_at or datetime.utcnow()
+        self._issued_at = issued_at or get_current_datetime()
 
     def to_dict(self):
         data = {
