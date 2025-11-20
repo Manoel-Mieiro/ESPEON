@@ -1,7 +1,6 @@
 from app.utils.time_utils import get_current_datetime
 from app.models.postgres.reports import Report
-from datetime import datetime
-
+from datetime import datetime, timedelta
 
 class ReportDTO:
     def __init__(
@@ -25,26 +24,6 @@ class ReportDTO:
         max_attention_span: float = None,
         issued_at: str = None
     ):
-        """
-        :param lecture_id: UUID da aula
-        :param subject_id: UUID da disciplina
-        :param total_students: Total de alunos participantes
-        :param total_time_watched: Tempo total assistido (minutos)
-        :param avg_lecture_duration: Duração média das aulas da disciplina (minutos)
-        :param avg_idle_duration: Tempo médio ocioso dos alunos (minutos)
-        :param avg_attention_span: Tempo médio de atenção dos alunos (minutos)
-        :param pct_enabled_camera: Percentual médio de câmeras ligadas (%)
-        :param pct_enabled_mic: Percentual médio de microfones ligados (%)
-        :param avg_cam_streaming_span: Duração média do streaming de câmera (minutos)
-        :param avg_mic_streaming_span: Duração média do streaming de microfone (minutos)
-        :param min_lecture_duration: Menor duração registrada de aula (minutos)
-        :param max_lecture_duration: Maior duração registrada de aula (minutos)
-        :param min_idle_duration: Menor tempo ocioso registrado (minutos)
-        :param max_idle_duration: Maior tempo ocioso registrado (minutos)
-        :param min_attention_span: Menor tempo médio de atenção (minutos)
-        :param max_attention_span: Maior tempo médio de atenção (minutos)
-        :param issued_at: Data/hora de emissão no formato 'YYYY-MM-DD HH:MM:SS' (opcional)
-        """
         if not lecture_id or not subject_id:
             raise ValueError("lecture_id and subject_id are required")
 

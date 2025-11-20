@@ -1,8 +1,10 @@
 from flask import send_file
-from app.models.postgres.reports import Report
+from app.services.postgres.reports.pdf.factory import ReportPdfFactory
 from app.services.postgres import reportsService
-from app.dto.postgres.reports import ReportDTO
 from app.repository.postgres.lecturesRepository import findOneLecture
+from app.dto.postgres.reports import ReportDTO
+from app.models.postgres.reports import Report
+
 
 
 def findAllReports():
@@ -85,8 +87,8 @@ def deleteReport(report_id):
 def getReportPdf(report_id):
     report_data = reportsService.findOneReport(report_id)
     report = Report(**report_data)
-    pdf_stream = reportsService.generateReportPdf(report)
-    pdf_stream.seek(0)
+    
+    pdf_stream = ReportPdfFactory(report).generate()
     
     return send_file(
         pdf_stream,
