@@ -33,7 +33,6 @@ document.addEventListener("submit", async (event) => {
     return;
   }
   
-  // Salva o email sendo cadastrado
   chrome.storage.session.set({ savedEmail: email });
   
   try {
@@ -47,15 +46,23 @@ document.addEventListener("submit", async (event) => {
     );
 
     if (response) {
-      // Mantém o email salvo mesmo após cadastro
       chrome.storage.session.set({ savedEmail: email });
       chrome.storage.session.remove("state");
       alert("Cadastro Concluído!");
       window.location.href = "redirect.html";
     } else {
-      // ... resto do código
+      chrome.runtime.sendMessage({
+        type: "console",
+        message: `Ocorreu um erro inesperado ao chamar a API\n Eis a response: ${response}`,
+      });
+
+      alert("Ocorreu um erro ao chamar o servidor!");
     }
   } catch (error) {
-    // ... tratamento de erro
+    chrome.runtime.sendMessage({
+      type: "console",
+      message: `Erro ao chamar a API: ${error.message}`,
+    });
+    alert(error.message);
   }
 });
