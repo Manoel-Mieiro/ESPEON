@@ -1,7 +1,7 @@
-const ENV = 'PRD'
+const ENV = 'DSV'
 
 const BASE_URLS = {
-  DEV: "http://localhost:8183",
+  DSV: "http://localhost:8183",
   PRD: "https://espeon.onrender.com"
 };
 export const CONFIG = {
