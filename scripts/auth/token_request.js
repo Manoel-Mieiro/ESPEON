@@ -4,9 +4,19 @@ import { CONFIG } from "../config.js";
 import api from "../api.js";
 
 export async function triggerTokenRequest(document, components) {
+  // Carrega email salvo ao inicializar
+  chrome.storage.session.get(['savedEmail'], (result) => {
+    if (result.savedEmail) {
+      document.getElementById("email").value = result.savedEmail;
+    }
+  });
+
   components.loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const email = document.getElementById("email").value;
+    
+    // Salva o email imediatamente
+    chrome.storage.session.set({ savedEmail: email });
     
     try {
       const user = await fetchUser(email);
@@ -22,7 +32,6 @@ export async function triggerTokenRequest(document, components) {
           submitButton.textContent = "Enviando...";
         }
 
-        // Faz a requisição diretamente (sem background script)
         try {
           const response = await api.callAPI(
             "PATCH",
@@ -35,7 +44,6 @@ export async function triggerTokenRequest(document, components) {
             message: "[DEBUG] Direct PATCH response: " + JSON.stringify(response) 
           });
 
-          // Assume sucesso se chegou aqui
           if (submitButton) {
             submitButton.disabled = false;
             submitButton.textContent = "Enviar Token";
@@ -64,7 +72,6 @@ export async function triggerTokenRequest(document, components) {
             submitButton.textContent = "Enviar Token";
           }
           
-          // Mesmo com erro, prossegue (o email pode ter sido enviado)
           alert("Solicitação enviada. Verifique seu email para o token.");
           styleOnToken(components, email);
           chrome.storage.session.set({
@@ -75,6 +82,8 @@ export async function triggerTokenRequest(document, components) {
         }
 
       } else {
+        // Remove email salvo se não estiver cadastrado
+        chrome.storage.session.remove(['savedEmail']);
         alert(`${email} não está cadastrado`);
         chrome.storage.session.set({ state: "register" });
         window.location.href = "redirect.html";

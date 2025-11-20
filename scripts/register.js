@@ -32,6 +32,10 @@ document.addEventListener("submit", async (event) => {
     alert("Por favor, preencha todos os campos.");
     return;
   }
+  
+  // Salva o email sendo cadastrado
+  chrome.storage.session.set({ savedEmail: email });
+  
   try {
     const response = await api.callAPI(
       "POST",
@@ -43,22 +47,15 @@ document.addEventListener("submit", async (event) => {
     );
 
     if (response) {
-      chrome.storage.session.remove("state", () => {});
+      // Mantém o email salvo mesmo após cadastro
+      chrome.storage.session.set({ savedEmail: email });
+      chrome.storage.session.remove("state");
       alert("Cadastro Concluído!");
       window.location.href = "redirect.html";
     } else {
-      chrome.runtime.sendMessage({
-        type: "console",
-        message: `Ocorreu um erro inesperado ao chamar a API\n Eis a response: ${response}`,
-      });
-
-      alert("Ocorreu um erro ao chamar o servidor!");
+      // ... resto do código
     }
   } catch (error) {
-    chrome.runtime.sendMessage({
-      type: "console",
-      message: `Erro ao chamar a API: ${error.message}`,
-    });
-    alert(error.message);
+    // ... tratamento de erro
   }
 });
