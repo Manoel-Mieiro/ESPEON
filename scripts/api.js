@@ -1,6 +1,10 @@
+import { apiLogger } from './logger.js';
+
 async function callAPI(method, server, payload) {
   let response = null;
   try {
+    apiLogger.debug(`Chamando API: ${method} ${server}`, payload);
+    
     response = await fetch(server, {
       method: method,
       headers: {
@@ -9,27 +13,16 @@ async function callAPI(method, server, payload) {
       body: JSON.stringify(payload),
     });
   } catch (error) {
-    chrome.runtime.sendMessage({
-      type: "console",
-      message: `[callAPI] Erro ao chamar API: ${error}`,
-    });
+    apiLogger.error(`Erro ao chamar API: ${error}`);
     return null;
   }
 
   if (response && response.ok) {
     const data = await response.json();
-    chrome.runtime.sendMessage({
-      type: "console",
-      message: `[callAPI] Sucesso: ${JSON.stringify(data)}`,
-    });
+    apiLogger.info(`Sucesso na API: ${JSON.stringify(data)}`);
     return data;
   } else {
-    chrome.runtime.sendMessage({
-      type: "console",
-      message: `[callAPI] Falha: ${
-        response ? response.status : "Sem resposta"
-      }`,
-    });
+    apiLogger.warn(`Falha na API: ${response ? response.status : "Sem resposta"}`);
     return null;
   }
 }
