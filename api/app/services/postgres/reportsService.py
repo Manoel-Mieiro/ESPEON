@@ -3,6 +3,11 @@ from app.services.postgres.reports.metricsCalc.base import (
     calculate_real_avg_session_per_student,
     calculate_attendance_ratio,
 )
+
+from app.services.postgres.reports.metricsCalc.focus import (
+    calculate_lecture_focus_ratio,
+    calculate_focus_durations,
+)
 from app.services.postgres.reports.metrics import (
     calculateTotalStudents,
     calculateTotalTimeWatched,
@@ -125,6 +130,11 @@ def populateReportMetrics(report: object):
         traces)
     metrics['attendance_ratio'] = calculate_attendance_ratio(
         traces, report._lecture_id)
+
+ # 3. Métricas de Foco
+    metrics['lecture_focus_ratio'] = calculate_lecture_focus_ratio(traces)
+    metrics['avg_focus_duration'], metrics['max_focus_duration'] = calculate_focus_durations(
+        traces)
 
     metrics['total_time_watched'] = calculateTotalTimeWatched(
         report._lecture_id)
