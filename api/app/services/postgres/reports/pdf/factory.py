@@ -58,6 +58,13 @@ class ReportPdfFactory:
         ]
         self._draw_section("BASE", base_lines)
 
+        focus_lines = [
+            f"Taxa de foco na aula: {getattr(self.report, '_lecture_focus_ratio', 0) or 0:.1%}",
+            f"Duração média em foco: {getattr(self.report, '_avg_focus_duration', 0) or 0:.1f} min",
+            f"Maior duração contínua focado: {getattr(self.report, '_max_focus_duration', 0) or 0:.1f} min"
+        ]
+        self._draw_section("FOCO", focus_lines)
+
         # Seção PERIFÉRICOS
         peripherals_lines = [
             f"% tempo com câmera ligada: {self.report._pct_enabled_camera or 0:.0f}%",
