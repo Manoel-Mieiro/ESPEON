@@ -4,6 +4,12 @@ from app.services.postgres.reports.metricsCalc.base import (
     calculate_attendance_ratio,
 )
 
+from app.services.postgres.reports.metricsCalc.disturb import (
+    calculate_main_distractions,
+    calculate_distraction_frequency,
+    calculate_distraction_ratio,
+)
+
 from app.services.postgres.reports.metricsCalc.focus import (
     calculate_lecture_focus_ratio,
     calculate_focus_durations,
@@ -135,6 +141,11 @@ def populateReportMetrics(report: object):
     metrics['lecture_focus_ratio'] = calculate_lecture_focus_ratio(traces)
     metrics['avg_focus_duration'], metrics['max_focus_duration'] = calculate_focus_durations(
         traces)
+
+    # 4. Métricas de Distração
+    metrics['distraction_ratio'] = calculate_distraction_ratio(traces)
+    metrics['distraction_frequency'] = calculate_distraction_frequency(traces)
+    metrics['main_distractions'] = calculate_main_distractions(traces)
 
     metrics['total_time_watched'] = calculateTotalTimeWatched(
         report._lecture_id)
