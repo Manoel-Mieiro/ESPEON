@@ -12,6 +12,9 @@ class Report:
         teacher: str = None,
         date_lecture: datetime = None,
         total_students: int = 0,
+        real_total_session_duration: float = None,
+        avg_session_per_student: float = None,
+        attendance_ratio: float = None,
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
         avg_idle_duration: float = None,
@@ -37,6 +40,9 @@ class Report:
         self._teacher = teacher
         self._date_lecture = date_lecture or datetime.utcnow()
         self._total_students = total_students
+        self._real_total_session_duration = real_total_session_duration
+        self._avg_session_per_student = avg_session_per_student
+        self._attendance_ratio = attendance_ratio
         self._total_time_watched = total_time_watched
         self._avg_lecture_duration = avg_lecture_duration
         self._avg_idle_duration = avg_idle_duration
@@ -70,6 +76,9 @@ class Report:
             "teacher": self._teacher,
             "date_lecture": format_date(self._date_lecture, "%d/%m/%Y"),
             "total_students": self._total_students,
+            "real_total_session_duration": self._real_total_session_duration,
+            "avg_session_per_student": self._avg_session_per_student,
+            "attendance_ratio": self._attendance_ratio,
             "total_time_watched": self._total_time_watched,
             "avg_lecture_duration": self._avg_lecture_duration,
             "avg_idle_duration": self._avg_idle_duration,

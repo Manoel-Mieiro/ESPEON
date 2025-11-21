@@ -2,12 +2,16 @@ from app.utils.time_utils import get_current_datetime
 from app.models.postgres.reports import Report
 from datetime import datetime, timedelta
 
+
 class ReportDTO:
     def __init__(
         self,
         lecture_id: str,
         subject_id: str,
         total_students: int = 0,
+        real_total_session_duration: float = None,
+        avg_session_per_student: float = None,
+        attendance_ratio: float = None,
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
         avg_idle_duration: float = None,
@@ -30,6 +34,9 @@ class ReportDTO:
         self.lecture_id = lecture_id
         self.subject_id = subject_id
         self.total_students = total_students
+        self.real_total_session_duration = real_total_session_duration
+        self.avg_session_per_student = avg_session_per_student
+        self.attendance_ratio = attendance_ratio
         self.total_time_watched = total_time_watched
         self.avg_lecture_duration = avg_lecture_duration
         self.avg_idle_duration = avg_idle_duration
@@ -58,6 +65,9 @@ class ReportDTO:
             lecture_id=self.lecture_id,
             subject_id=self.subject_id,
             total_students=self.total_students,
+            real_total_session_duration=self.real_total_session_duration,
+            avg_session_per_student=self.avg_session_per_student,
+            attendance_ratio=self.attendance_ratio,
             total_time_watched=self.total_time_watched,
             avg_lecture_duration=self.avg_lecture_duration,
             avg_idle_duration=self.avg_idle_duration,
