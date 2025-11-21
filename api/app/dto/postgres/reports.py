@@ -9,9 +9,15 @@ class ReportDTO:
         lecture_id: str,
         subject_id: str,
         total_students: int = 0,
+
         real_total_session_duration: float = None,
         avg_session_per_student: float = None,
         attendance_ratio: float = None,
+
+        lecture_focus_ratio: float = None,
+        avg_focus_duration: float = None,
+        max_focus_duration: float = None,
+
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
         avg_idle_duration: float = None,
@@ -34,9 +40,15 @@ class ReportDTO:
         self.lecture_id = lecture_id
         self.subject_id = subject_id
         self.total_students = total_students
+
         self.real_total_session_duration = real_total_session_duration
         self.avg_session_per_student = avg_session_per_student
         self.attendance_ratio = attendance_ratio
+
+        self.lecture_focus_ratio = lecture_focus_ratio
+        self.avg_focus_duration = avg_focus_duration
+        self.max_focus_duration = max_focus_duration
+
         self.total_time_watched = total_time_watched
         self.avg_lecture_duration = avg_lecture_duration
         self.avg_idle_duration = avg_idle_duration
@@ -65,9 +77,15 @@ class ReportDTO:
             lecture_id=self.lecture_id,
             subject_id=self.subject_id,
             total_students=self.total_students,
+
             real_total_session_duration=self.real_total_session_duration,
             avg_session_per_student=self.avg_session_per_student,
             attendance_ratio=self.attendance_ratio,
+
+            lecture_focus_ratio=self.lecture_focus_ratio,
+            avg_focus_duration=self.avg_focus_duration,
+            max_focus_duration=self.max_focus_duration,
+
             total_time_watched=self.total_time_watched,
             avg_lecture_duration=self.avg_lecture_duration,
             avg_idle_duration=self.avg_idle_duration,
