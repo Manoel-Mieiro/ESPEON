@@ -21,6 +21,9 @@ class Report:
         avg_focus_duration: float = None,
         max_focus_duration: float = None,
 
+        distraction_ratio: float = None,
+        distraction_frequency: float = None,
+        main_distractions: list = None,
 
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
@@ -57,6 +60,10 @@ class Report:
         self._lecture_focus_ratio = lecture_focus_ratio
         self._avg_focus_duration = avg_focus_duration
         self._max_focus_duration = max_focus_duration
+
+        self._distraction_ratio = distraction_ratio
+        self._distraction_frequency = distraction_frequency
+        self._main_distractions = main_distractions
 
         self._total_time_watched = total_time_watched
         self._avg_lecture_duration = avg_lecture_duration
@@ -100,6 +107,9 @@ class Report:
             "avg_focus_duration": self._avg_focus_duration,
             "max_focus_duration": self._max_focus_duration,
 
+            "distraction_ratio": self._distraction_ratio,
+            "distraction_frequency": self._distraction_frequency,
+            "main_distractions": self._main_distractions,
 
             "total_time_watched": self._total_time_watched,
             "avg_lecture_duration": self._avg_lecture_duration,
@@ -133,6 +143,9 @@ class Report:
             teacher=data.get("teacher"),
             date_lecture=data.get("date_lecture"),
             total_students=data.get("total_students", 0),
+            distraction_ratio=data.get("distraction_ratio"),
+            distraction_frequency=data.get("distraction_frequency"),
+            main_distractions=data.get("main_distractions"),
             total_time_watched=data.get("total_time_watched", 0.0),
             avg_lecture_duration=data.get("avg_lecture_duration"),
             avg_idle_duration=data.get("avg_idle_duration"),
