@@ -1,3 +1,8 @@
+from app.services.postgres.reports.metricsCalc.base import (
+    calculate_real_total_session_duration,
+    calculate_real_avg_session_per_student,
+    calculate_attendance_ratio,
+)
 from app.services.postgres.reports.metrics import (
     calculateTotalStudents,
     calculateTotalTimeWatched,
@@ -54,21 +59,25 @@ def createReport(report: Report):
     Cria ou atualiza o relatório de uma aula (lecture_id único).
     """
     try:
-        existing_report = reportsRepository.getReportByLectureId(report._lecture_id)
+        existing_report = reportsRepository.getReportByLectureId(
+            report._lecture_id)
 
         if existing_report:
-            print(f"[SERVICE] Relatório já existe para lecture_id={report._lecture_id}. Atualizando issued_at...")
+            print(
+                f"[SERVICE] Relatório já existe para lecture_id={report._lecture_id}. Atualizando issued_at...")
             updated = reportsRepository.updateReport(existing_report["report_id"], {
                 "issued_at": datetime.utcnow()
             })
             return updated
 
-        print(f"[SERVICE] Criando novo relatório para lecture_id={report._lecture_id}...")
+        print(
+            f"[SERVICE] Criando novo relatório para lecture_id={report._lecture_id}...")
         return reportsRepository.createReport(report)
 
     except Exception as e:
         print("[SERVICE] Error creating report:", e)
         raise e
+
 
 def findOneReport(report_id: str):
     try:
@@ -109,6 +118,14 @@ def populateReportMetrics(report: object):
     metrics = {}
 
     metrics['total_students'] = calculateTotalStudents(traces)
+
+    metrics['real_total_session_duration'] = calculate_real_total_session_duration(
+        traces)
+    metrics['avg_session_per_student'] = calculate_real_avg_session_per_student(
+        traces)
+    metrics['attendance_ratio'] = calculate_attendance_ratio(
+        traces, report._lecture_id)
+
     metrics['total_time_watched'] = calculateTotalTimeWatched(
         report._lecture_id)
     metrics['avg_lecture_duration'] = calculateAvgLectureDuration(
