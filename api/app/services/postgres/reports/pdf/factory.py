@@ -50,7 +50,15 @@ class ReportPdfFactory:
         for line in info_lines:
             self._draw_paragraph(line, normal_style)
 
-        # Seções
+        # NOVA SEÇÃO: BASE (com as 3 métricas reais)
+        base_lines = [
+            f"Tempo total real de sessão: {getattr(self.report, '_real_total_session_duration', 0) or 0:.1f} min",
+            f"Tempo médio por aluno: {getattr(self.report, '_avg_session_per_student', 0) or 0:.1f} min",
+            f"Taxa de presença: {getattr(self.report, '_attendance_ratio', 0) or 0:.1%}"
+        ]
+        self._draw_section("BASE", base_lines)
+
+        # Seção PERIFÉRICOS
         peripherals_lines = [
             f"% tempo com câmera ligada: {self.report._pct_enabled_camera or 0:.0f}%",
             f"% tempo com microfone ligado: {self.report._pct_enabled_mic or 0:.0f}%",
@@ -59,6 +67,7 @@ class ReportPdfFactory:
         ]
         self._draw_section("PERIFÉRICOS", peripherals_lines)
 
+        # Seção PICOS E DECLIVES
         peaks_lines = [
             f"Mín. duração da aula: {self.report._min_lecture_duration or 0:.0f} min",
             f"Máx. duração da aula: {self.report._max_lecture_duration or 0:.0f} min",
