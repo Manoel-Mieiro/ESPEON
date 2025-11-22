@@ -4,6 +4,13 @@ from app.services.postgres.reports.metricsCalc.participation import (
     calculate_voluntary_participation,
 )
 
+from app.services.postgres.reports.metricsCalc.scores import (
+    calculate_distraction_risk,
+    calculate_attention_health,
+    calculate_engagement_score,
+)
+
+
 from app.services.postgres.reports.metricsCalc.time import (
     calculate_dropoff_point,
     calculate_peak_engagement_time,
@@ -178,12 +185,19 @@ def populateReportMetrics(report: object):
     metrics['mic_engagement'] = calculate_mic_engagement(traces)
     metrics['voluntary_participation'] = calculate_voluntary_participation(
         traces)
-    
-    # 5. Métricas temporais
-    metrics['engagement_trend'] = calculate_engagement_trend(traces, report._lecture_id)
-    metrics['peak_engagement_time'] = calculate_peak_engagement_time(traces, report._lecture_id)
-    metrics['dropoff_point'] = calculate_dropoff_point(traces, report._lecture_id)
 
+    # 6. Métricas temporais
+    metrics['engagement_trend'] = calculate_engagement_trend(
+        traces, report._lecture_id)
+    metrics['peak_engagement_time'] = calculate_peak_engagement_time(
+        traces, report._lecture_id)
+    metrics['dropoff_point'] = calculate_dropoff_point(
+        traces, report._lecture_id)
+
+    # 7. Scores Compostos
+    metrics['engagement_score'] = calculate_engagement_score(metrics)
+    metrics['attention_health'] = calculate_attention_health(metrics)
+    metrics['distraction_risk'] = calculate_distraction_risk(metrics)
 
     metrics['total_time_watched'] = calculateTotalTimeWatched(
         report._lecture_id)
