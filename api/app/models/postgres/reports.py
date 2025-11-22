@@ -25,6 +25,10 @@ class Report:
         distraction_frequency: float = None,
         main_distractions: list = None,
 
+        camera_engagement: float = None,
+        mic_engagement: float = None,
+        voluntary_participation: float = None,
+
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
         avg_idle_duration: float = None,
@@ -64,6 +68,10 @@ class Report:
         self._distraction_ratio = distraction_ratio
         self._distraction_frequency = distraction_frequency
         self._main_distractions = main_distractions
+
+        self._camera_engagement = camera_engagement
+        self._mic_engagement = mic_engagement
+        self._voluntary_participation = voluntary_participation
 
         self._total_time_watched = total_time_watched
         self._avg_lecture_duration = avg_lecture_duration
@@ -111,6 +119,10 @@ class Report:
             "distraction_frequency": self._distraction_frequency,
             "main_distractions": self._main_distractions,
 
+            "camera_engagement": self._camera_engagement,
+            "mic_engagement": self._mic_engagement,
+            "voluntary_participation": self._voluntary_participation,
+
             "total_time_watched": self._total_time_watched,
             "avg_lecture_duration": self._avg_lecture_duration,
             "avg_idle_duration": self._avg_idle_duration,
@@ -146,6 +158,9 @@ class Report:
             distraction_ratio=data.get("distraction_ratio"),
             distraction_frequency=data.get("distraction_frequency"),
             main_distractions=data.get("main_distractions"),
+            camera_engagement=data.get("camera_engagement"),
+            mic_engagement=data.get("mic_engagement"),
+            voluntary_participation=data.get("voluntary_participation"),
             total_time_watched=data.get("total_time_watched", 0.0),
             avg_lecture_duration=data.get("avg_lecture_duration"),
             avg_idle_duration=data.get("avg_idle_duration"),
