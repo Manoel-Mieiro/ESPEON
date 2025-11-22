@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from app.services.postgres.lectures import findOneLecture
 
 def is_lecture_tab(trace):
     """
@@ -57,3 +57,36 @@ def is_active_participation(trace):
         'microphoneStreaming', False)
 
     return camera_active or mic_active
+
+def get_lecture_periods(lecture_id):
+    """
+    Retorna period_start e period_end como datetime.datetime
+    """
+    try:
+        lecture = findOneLecture(lecture_id)
+
+        if not lecture:
+            raise ValueError(f"Aula {lecture_id} não encontrada.")
+
+        period_start = lecture.get("period_start")
+        period_end = lecture.get("period_end")
+
+        if not period_start or not period_end:
+            raise ValueError(f"Aula {lecture_id} possui campos nulos em period_start/period_end.")
+
+        # Converter strings para datetime.datetime com data dummy
+        dummy_date = datetime(2000, 1, 1)  
+        start_dt = datetime.combine(dummy_date, datetime.strptime(period_start, "%H:%M:%S").time())
+        end_dt = datetime.combine(dummy_date, datetime.strptime(period_end, "%H:%M:%S").time())
+
+        # Ajuste se a aula terminar depois da meia-noite
+        if end_dt < start_dt:
+            end_dt = end_dt.replace(day=end_dt.day + 1)
+        
+        print(f"[SERVICE] Períodos da aula: {start_dt.time()} até {end_dt.time()}")
+
+        return start_dt, end_dt
+
+    except Exception as e:
+        print(f"[SERVICE] Erro ao obter períodos da aula: {e}")
+        return None, None
