@@ -33,6 +33,10 @@ class Report:
         mic_engagement: float = None,
         voluntary_participation: float = None,
 
+        engagement_trend: dict = None,
+        peak_engagement_time: str = None,
+        dropoff_point: str = None,
+
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
         avg_idle_duration: float = None,
@@ -80,6 +84,15 @@ class Report:
         self._camera_engagement = camera_engagement
         self._mic_engagement = mic_engagement
         self._voluntary_participation = voluntary_participation
+
+        self._engagement_trend = engagement_trend or {
+            "q1": 0.0,
+            "q2": 0.0,
+            "q3": 0.0,
+            "q4": 0.0
+        }
+        self._peak_engagement_time = peak_engagement_time
+        self._dropoff_point = dropoff_point
 
         self._total_time_watched = total_time_watched
         self._avg_lecture_duration = avg_lecture_duration
@@ -135,6 +148,10 @@ class Report:
             "mic_engagement": self._mic_engagement,
             "voluntary_participation": self._voluntary_participation,
 
+            "engagement_trend": self._engagement_trend,
+            "peak_engagement_time": self._peak_engagement_time,
+            "dropoff_point": self._dropoff_point,
+
             "total_time_watched": self._total_time_watched,
             "avg_lecture_duration": self._avg_lecture_duration,
             "avg_idle_duration": self._avg_idle_duration,
@@ -176,6 +193,9 @@ class Report:
             camera_engagement=data.get("camera_engagement"),
             mic_engagement=data.get("mic_engagement"),
             voluntary_participation=data.get("voluntary_participation"),
+            engagement_trend=data.get("engagement_trend"),
+            peak_engagement_time=data.get("peak_engagement_time"),
+            dropoff_point=data.get("dropoff_point"),
             total_time_watched=data.get("total_time_watched", 0.0),
             avg_lecture_duration=data.get("avg_lecture_duration"),
             avg_idle_duration=data.get("avg_idle_duration"),

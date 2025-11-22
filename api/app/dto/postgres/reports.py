@@ -30,6 +30,10 @@ class ReportDTO:
         mic_engagement: float = None,
         voluntary_participation: float = None,
 
+        engagement_trend: dict = None,
+        peak_engagement_time: str = None,
+        dropoff_point: str = None,
+
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
         avg_idle_duration: float = None,
@@ -73,6 +77,14 @@ class ReportDTO:
         self.mic_engagement = mic_engagement
         self.voluntary_participation = voluntary_participation
 
+        self.engagement_trend = engagement_trend or {
+            "q1": 0.0,
+            "q2": 0.0,
+            "q3": 0.0,
+            "q4": 0.0
+        }
+        self.peak_engagement_time = peak_engagement_time
+        self.dropoff_point = dropoff_point
 
         self.total_time_watched = total_time_watched
         self.avg_lecture_duration = avg_lecture_duration
@@ -122,6 +134,10 @@ class ReportDTO:
             camera_engagement=self.camera_engagement,
             mic_engagement=self.mic_engagement,
             voluntary_participation=self.voluntary_participation,
+
+            engagement_trend=self.engagement_trend,
+            peak_engagement_time=self.peak_engagement_time,
+            dropoff_point=self.dropoff_point,
 
             total_time_watched=self.total_time_watched,
             avg_lecture_duration=self.avg_lecture_duration,
