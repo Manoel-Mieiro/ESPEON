@@ -42,10 +42,10 @@ class ReportPdfFactory:
             f"Disciplina: {self.report._subject_name}",
             f"Docente: {self.report._teacher}",
             f"Total de alunos: {self.report._total_students}",
-            f"Tempo total assistido: {self.report._total_time_watched or 0:.0f} min",
-            f"Média de duração da aula: {self.report._avg_lecture_duration or 0:.0f} min",
-            f"Duração ociosa média: {self.report._avg_idle_duration or 0:.0f} min",
-            f"Atividade média (atenção): {self.report._avg_attention_span or 0:.0f} min"
+            # f"Tempo total assistido: {self.report._total_time_watched or 0:.0f} min",
+            # f"Média de duração da aula: {self.report._avg_lecture_duration or 0:.0f} min",
+            # f"Duração ociosa média: {self.report._avg_idle_duration or 0:.0f} min",
+            # f"Atividade média (atenção): {self.report._avg_attention_span or 0:.0f} min"
         ]
         for line in info_lines:
             self._draw_paragraph(line, normal_style)
@@ -73,25 +73,34 @@ class ReportPdfFactory:
         ]
         self._draw_section("DISTRAÇÃO", distraction_lines)
 
-        # Seção PERIFÉRICOS
-        peripherals_lines = [
-            f"% tempo com câmera ligada: {self.report._pct_enabled_camera or 0:.0f}%",
-            f"% tempo com microfone ligado: {self.report._pct_enabled_mic or 0:.0f}%",
-            f"Média de streaming de câmera: {self.report._avg_cam_streaming_span or 0:.0f} min",
-            f"Média de streaming de microfone: {self.report._avg_mic_streaming_span or 0:.0f} min"
+        # ENGAJAMENTO
+        engagement_lines = [
+            f"Engajamento pela câmera: {getattr(self.report, '_camera_engagement', 0) or 0:.1%}",
+            f"Engajamento pelo microfone: {getattr(self.report, '_mic_engagement', 0) or 0:.1%}",
+            f"Participações voluntárias: {getattr(self.report, '_voluntary_participation', 0) or 0:.0f} interações",
         ]
-        self._draw_section("PERIFÉRICOS", peripherals_lines)
+        self._draw_section("ENGAJAMENTO", engagement_lines)
+
+
+        # Seção PERIFÉRICOS
+        # peripherals_lines = [
+        #     f"% tempo com câmera ligada: {self.report._pct_enabled_camera or 0:.0f}%",
+        #     f"% tempo com microfone ligado: {self.report._pct_enabled_mic or 0:.0f}%",
+        #     f"Média de streaming de câmera: {self.report._avg_cam_streaming_span or 0:.0f} min",
+        #     f"Média de streaming de microfone: {self.report._avg_mic_streaming_span or 0:.0f} min"
+        # ]
+        # self._draw_section("PERIFÉRICOS", peripherals_lines)
 
         # Seção PICOS E DECLIVES
-        peaks_lines = [
-            f"Mín. duração da aula: {self.report._min_lecture_duration or 0:.0f} min",
-            f"Máx. duração da aula: {self.report._max_lecture_duration or 0:.0f} min",
-            f"Mín. tempo ocioso: {self.report._min_idle_duration or 0:.0f} min",
-            f"Máx. tempo ocioso: {self.report._max_idle_duration or 0:.0f} min",
-            f"Mín. atenção: {self.report._min_attention_span or 0:.0f} min",
-            f"Máx. atenção: {self.report._max_attention_span or 0:.0f} min"
-        ]
-        self._draw_section("PICOS E DECLIVES", peaks_lines)
+        # peaks_lines = [
+        #     f"Mín. duração da aula: {self.report._min_lecture_duration or 0:.0f} min",
+        #     f"Máx. duração da aula: {self.report._max_lecture_duration or 0:.0f} min",
+        #     f"Mín. tempo ocioso: {self.report._min_idle_duration or 0:.0f} min",
+        #     f"Máx. tempo ocioso: {self.report._max_idle_duration or 0:.0f} min",
+        #     f"Mín. atenção: {self.report._min_attention_span or 0:.0f} min",
+        #     f"Máx. atenção: {self.report._max_attention_span or 0:.0f} min"
+        # ]
+        # self._draw_section("PICOS E DECLIVES", peaks_lines)
 
         # Rodapé
         self._draw_paragraph(
