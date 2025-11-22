@@ -34,6 +34,10 @@ class ReportDTO:
         peak_engagement_time: str = None,
         dropoff_point: str = None,
 
+        engagement_score: float = None,
+        attention_health: float = None,
+        distraction_risk: float = None,
+
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
         avg_idle_duration: float = None,
@@ -85,6 +89,10 @@ class ReportDTO:
         }
         self.peak_engagement_time = peak_engagement_time
         self.dropoff_point = dropoff_point
+
+        self.engagement_score = engagement_score
+        self.attention_health = attention_health
+        self.distraction_risk = distraction_risk
 
         self.total_time_watched = total_time_watched
         self.avg_lecture_duration = avg_lecture_duration
@@ -138,6 +146,10 @@ class ReportDTO:
             engagement_trend=self.engagement_trend,
             peak_engagement_time=self.peak_engagement_time,
             dropoff_point=self.dropoff_point,
+
+            engagement_score=self.engagement_score,
+            attention_health=self.attention_health,
+            distraction_risk=self.distraction_risk,
 
             total_time_watched=self.total_time_watched,
             avg_lecture_duration=self.avg_lecture_duration,

@@ -37,6 +37,10 @@ class Report:
         peak_engagement_time: str = None,
         dropoff_point: str = None,
 
+        engagement_score: float = None,
+        attention_health: float = None,
+        distraction_risk: float = None,
+
         total_time_watched: float = 0.0,
         avg_lecture_duration: float = None,
         avg_idle_duration: float = None,
@@ -93,6 +97,10 @@ class Report:
         }
         self._peak_engagement_time = peak_engagement_time
         self._dropoff_point = dropoff_point
+
+        self._engagement_score = engagement_score
+        self._attention_health = attention_health
+        self._distraction_risk = distraction_risk
 
         self._total_time_watched = total_time_watched
         self._avg_lecture_duration = avg_lecture_duration
@@ -152,6 +160,10 @@ class Report:
             "peak_engagement_time": self._peak_engagement_time,
             "dropoff_point": self._dropoff_point,
 
+            "engagement_score": self._engagement_score,
+            "attention_health": self._attention_health,
+            "distraction_risk": self._distraction_risk,
+
             "total_time_watched": self._total_time_watched,
             "avg_lecture_duration": self._avg_lecture_duration,
             "avg_idle_duration": self._avg_idle_duration,
@@ -196,6 +208,9 @@ class Report:
             engagement_trend=data.get("engagement_trend"),
             peak_engagement_time=data.get("peak_engagement_time"),
             dropoff_point=data.get("dropoff_point"),
+            engagement_score=data.get("engagement_score"),
+            attention_health=data.get("attention_health"),
+            distraction_risk=data.get("distraction_risk"),
             total_time_watched=data.get("total_time_watched", 0.0),
             avg_lecture_duration=data.get("avg_lecture_duration"),
             avg_idle_duration=data.get("avg_idle_duration"),
