@@ -1,3 +1,10 @@
+from app.services.postgres.reports.metricsCalc.participation import (
+    calculate_camera_engagement,
+    calculate_mic_engagement,
+    calculate_voluntary_participation,
+)
+
+
 from app.services.postgres.reports.metricsCalc.base import (
     calculate_real_total_session_duration,
     calculate_real_avg_session_per_student,
@@ -130,6 +137,7 @@ def populateReportMetrics(report: object):
 
     metrics['total_students'] = calculateTotalStudents(traces)
 
+    # 1. Métricas base
     metrics['real_total_session_duration'] = calculate_real_total_session_duration(
         traces)
     metrics['avg_session_per_student'] = calculate_real_avg_session_per_student(
@@ -137,15 +145,21 @@ def populateReportMetrics(report: object):
     metrics['attendance_ratio'] = calculate_attendance_ratio(
         traces, report._lecture_id)
 
- # 3. Métricas de Foco
+    # 2. Métricas de Foco
     metrics['lecture_focus_ratio'] = calculate_lecture_focus_ratio(traces)
     metrics['avg_focus_duration'], metrics['max_focus_duration'] = calculate_focus_durations(
         traces)
 
-    # 4. Métricas de Distração
+    # 3. Métricas de Distração
     metrics['distraction_ratio'] = calculate_distraction_ratio(traces)
     metrics['distraction_frequency'] = calculate_distraction_frequency(traces)
     metrics['main_distractions'] = calculate_main_distractions(traces)
+
+    # 5. Métricas de Participação Ativa
+    metrics['camera_engagement'] = calculate_camera_engagement(traces)
+    metrics['mic_engagement'] = calculate_mic_engagement(traces)
+    metrics['voluntary_participation'] = calculate_voluntary_participation(
+        traces)
 
     metrics['total_time_watched'] = calculateTotalTimeWatched(
         report._lecture_id)
