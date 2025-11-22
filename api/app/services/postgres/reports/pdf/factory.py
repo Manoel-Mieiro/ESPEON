@@ -88,6 +88,7 @@ class ReportPdfFactory:
             f"Participações voluntárias: {getattr(self.report, '_voluntary_participation', 0) or 0:.0f} interações",
         ]
         self._draw_section("ENGAJAMENTO", engagement_lines)
+
         trend = self.report._engagement_trend or {}
         trend_lines = [
                 f"Engajamento Q1: {trend.get('q1', 0):.0%}",
@@ -100,25 +101,13 @@ class ReportPdfFactory:
 
         self._draw_section("PADRÕES TEMPORAIS", trend_lines)
 
-        # Seção PERIFÉRICOS
-        # peripherals_lines = [
-        #     f"% tempo com câmera ligada: {self.report._pct_enabled_camera or 0:.0f}%",
-        #     f"% tempo com microfone ligado: {self.report._pct_enabled_mic or 0:.0f}%",
-        #     f"Média de streaming de câmera: {self.report._avg_cam_streaming_span or 0:.0f} min",
-        #     f"Média de streaming de microfone: {self.report._avg_mic_streaming_span or 0:.0f} min"
-        # ]
-        # self._draw_section("PERIFÉRICOS", peripherals_lines)
-
-        # Seção PICOS E DECLIVES
-        # peaks_lines = [
-        #     f"Mín. duração da aula: {self.report._min_lecture_duration or 0:.0f} min",
-        #     f"Máx. duração da aula: {self.report._max_lecture_duration or 0:.0f} min",
-        #     f"Mín. tempo ocioso: {self.report._min_idle_duration or 0:.0f} min",
-        #     f"Máx. tempo ocioso: {self.report._max_idle_duration or 0:.0f} min",
-        #     f"Mín. atenção: {self.report._min_attention_span or 0:.0f} min",
-        #     f"Máx. atenção: {self.report._max_attention_span or 0:.0f} min"
-        # ]
-        # self._draw_section("PICOS E DECLIVES", peaks_lines)
+        # MÉTRICAS COMPOSTAS DE ENGAJAMENTO
+        score_lines = [
+            f"Score geral de engajamento: {getattr(self.report, '_engagement_score', 0) or 0:.1%}",
+            f"Saúde da atenção: {getattr(self.report, '_attention_health', 0) or 0:.1%}",
+            f"Risco de distração: {getattr(self.report, '_distraction_risk', 0) or 0:.1%}",
+        ]
+        self._draw_section("SCORES", score_lines)
 
         # Rodapé
         self._draw_paragraph(
