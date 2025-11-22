@@ -25,6 +25,10 @@ class Report:
         distraction_frequency: float = None,
         main_distractions: list = None,
 
+        tab_switch_frequency: float = None,
+        multitasking_intensity: float = None,
+        focus_fragmentation: float = None,
+
         camera_engagement: float = None,
         mic_engagement: float = None,
         voluntary_participation: float = None,
@@ -68,6 +72,10 @@ class Report:
         self._distraction_ratio = distraction_ratio
         self._distraction_frequency = distraction_frequency
         self._main_distractions = main_distractions
+
+        self._tab_switch_frequency = tab_switch_frequency
+        self._multitasking_intensity = multitasking_intensity
+        self._focus_fragmentation = focus_fragmentation
 
         self._camera_engagement = camera_engagement
         self._mic_engagement = mic_engagement
@@ -119,6 +127,10 @@ class Report:
             "distraction_frequency": self._distraction_frequency,
             "main_distractions": self._main_distractions,
 
+            "tab_switch_frequency": self._tab_switch_frequency,
+            "multitasking_intensity": self._multitasking_intensity,
+            "focus_fragmentation": self._focus_fragmentation,
+
             "camera_engagement": self._camera_engagement,
             "mic_engagement": self._mic_engagement,
             "voluntary_participation": self._voluntary_participation,
@@ -158,6 +170,9 @@ class Report:
             distraction_ratio=data.get("distraction_ratio"),
             distraction_frequency=data.get("distraction_frequency"),
             main_distractions=data.get("main_distractions"),
+            tab_switch_frequency=data.get("tab_switch_frequency"),
+            multitasking_intensity=data.get("multitasking_intensity"),
+            focus_fragmentation=data.get("focus_fragmentation"),
             camera_engagement=data.get("camera_engagement"),
             mic_engagement=data.get("mic_engagement"),
             voluntary_participation=data.get("voluntary_participation"),

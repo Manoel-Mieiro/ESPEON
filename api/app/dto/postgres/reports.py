@@ -22,6 +22,10 @@ class ReportDTO:
         distraction_frequency: float = None,
         main_distractions: list = None,
 
+        tab_switch_frequency: float = None,
+        multitasking_intensity: float = None,
+        focus_fragmentation: float = None,
+
         camera_engagement: float = None,
         mic_engagement: float = None,
         voluntary_participation: float = None,
@@ -60,6 +64,10 @@ class ReportDTO:
         self.distraction_ratio = distraction_ratio
         self.distraction_frequency = distraction_frequency
         self.main_distractions = main_distractions
+
+        self.tab_switch_frequency = tab_switch_frequency
+        self.multitasking_intensity = multitasking_intensity
+        self.focus_fragmentation = focus_fragmentation
 
         self.camera_engagement = camera_engagement
         self.mic_engagement = mic_engagement
@@ -106,6 +114,10 @@ class ReportDTO:
             distraction_ratio=self.distraction_ratio,
             distraction_frequency=self.distraction_frequency,
             main_distractions=self.main_distractions,
+
+            tab_switch_frequency=self.tab_switch_frequency,
+            multitasking_intensity=self.multitasking_intensity,
+            focus_fragmentation=self.focus_fragmentation,
 
             camera_engagement=self.camera_engagement,
             mic_engagement=self.mic_engagement,
