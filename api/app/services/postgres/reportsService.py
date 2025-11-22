@@ -4,6 +4,12 @@ from app.services.postgres.reports.metricsCalc.participation import (
     calculate_voluntary_participation,
 )
 
+from app.services.postgres.reports.metricsCalc.time import (
+    calculate_dropoff_point,
+    calculate_peak_engagement_time,
+    calculate_engagement_trend,
+)
+
 from app.services.postgres.reports.metricsCalc.base import (
     calculate_real_total_session_duration,
     calculate_real_avg_session_per_student,
@@ -172,6 +178,12 @@ def populateReportMetrics(report: object):
     metrics['mic_engagement'] = calculate_mic_engagement(traces)
     metrics['voluntary_participation'] = calculate_voluntary_participation(
         traces)
+    
+    # 5. Métricas temporais
+    metrics['engagement_trend'] = calculate_engagement_trend(traces, report._lecture_id)
+    metrics['peak_engagement_time'] = calculate_peak_engagement_time(traces, report._lecture_id)
+    metrics['dropoff_point'] = calculate_dropoff_point(traces, report._lecture_id)
+
 
     metrics['total_time_watched'] = calculateTotalTimeWatched(
         report._lecture_id)
