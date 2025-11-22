@@ -50,7 +50,7 @@ class ReportPdfFactory:
         for line in info_lines:
             self._draw_paragraph(line, normal_style)
 
-        # NOVA SEÇÃO: BASE (com as 3 métricas reais)
+        # BASE 
         base_lines = [
             f"Tempo total real de sessão: {getattr(self.report, '_real_total_session_duration', 0) or 0:.1f} min",
             f"Tempo médio por aluno: {getattr(self.report, '_avg_session_per_student', 0) or 0:.1f} min",
@@ -64,6 +64,14 @@ class ReportPdfFactory:
             f"Maior duração contínua focado: {getattr(self.report, '_max_focus_duration', 0) or 0:.1f} min"
         ]
         self._draw_section("FOCO", focus_lines)
+
+        # DISTRAÇÃO
+        distraction_lines = [
+            f"Taxa de distração: {getattr(self.report, '_distraction_ratio', 0) or 0:.1%}",
+            f"Frequência de distrações: {getattr(self.report, '_distraction_frequency', 0) or 0:.0f} eventos",
+            f"Principais causas: {', '.join(getattr(self.report, '_main_distractions', []) or [])}"
+        ]
+        self._draw_section("DISTRAÇÃO", distraction_lines)
 
         # Seção PERIFÉRICOS
         peripherals_lines = [
