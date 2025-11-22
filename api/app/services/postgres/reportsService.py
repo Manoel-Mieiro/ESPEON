@@ -4,7 +4,6 @@ from app.services.postgres.reports.metricsCalc.participation import (
     calculate_voluntary_participation,
 )
 
-
 from app.services.postgres.reports.metricsCalc.base import (
     calculate_real_total_session_duration,
     calculate_real_avg_session_per_student,
@@ -17,10 +16,17 @@ from app.services.postgres.reports.metricsCalc.disturb import (
     calculate_distraction_ratio,
 )
 
+from app.services.postgres.reports.metricsCalc.multitasking import (
+    calculate_tab_switch_frequency,
+    calculate_multitasking_intensity,
+    calculate_focus_fragmentation,
+)
+
 from app.services.postgres.reports.metricsCalc.focus import (
     calculate_lecture_focus_ratio,
     calculate_focus_durations,
 )
+
 from app.services.postgres.reports.metrics import (
     calculateTotalStudents,
     calculateTotalTimeWatched,
@@ -154,6 +160,12 @@ def populateReportMetrics(report: object):
     metrics['distraction_ratio'] = calculate_distraction_ratio(traces)
     metrics['distraction_frequency'] = calculate_distraction_frequency(traces)
     metrics['main_distractions'] = calculate_main_distractions(traces)
+
+    # 4. Métricas de Multitasking
+    metrics['tab_switch_frequency'] = calculate_tab_switch_frequency(traces)
+    metrics['multitasking_intensity'] = calculate_multitasking_intensity(
+        traces)
+    metrics['focus_fragmentation'] = calculate_focus_fragmentation(traces)
 
     # 5. Métricas de Participação Ativa
     metrics['camera_engagement'] = calculate_camera_engagement(traces)
