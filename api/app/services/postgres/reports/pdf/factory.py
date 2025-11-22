@@ -88,6 +88,17 @@ class ReportPdfFactory:
             f"Participações voluntárias: {getattr(self.report, '_voluntary_participation', 0) or 0:.0f} interações",
         ]
         self._draw_section("ENGAJAMENTO", engagement_lines)
+        trend = self.report._engagement_trend or {}
+        trend_lines = [
+                f"Engajamento Q1: {trend.get('q1', 0):.0%}",
+                f"Engajamento Q2: {trend.get('q2', 0):.0%}",
+                f"Engajamento Q3: {trend.get('q3', 0):.0%}",
+                f"Engajamento Q4: {trend.get('q4', 0):.0%}",
+                f"Pico de engajamento: {self.report._peak_engagement_time or 'N/A'}",
+                f"Ponto de queda (50%): {self.report._dropoff_point or 'N/A'}"
+            ]
+
+        self._draw_section("PADRÕES TEMPORAIS", trend_lines)
 
         # Seção PERIFÉRICOS
         # peripherals_lines = [
