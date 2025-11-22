@@ -50,7 +50,7 @@ class ReportPdfFactory:
         for line in info_lines:
             self._draw_paragraph(line, normal_style)
 
-        # BASE 
+        # BASE
         base_lines = [
             f"Tempo total real de sessão: {getattr(self.report, '_real_total_session_duration', 0) or 0:.1f} min",
             f"Tempo médio por aluno: {getattr(self.report, '_avg_session_per_student', 0) or 0:.1f} min",
@@ -73,6 +73,14 @@ class ReportPdfFactory:
         ]
         self._draw_section("DISTRAÇÃO", distraction_lines)
 
+        # MULTITASKING
+        fragmentation_lines = [
+            f"Trocas de aba/janela: {getattr(self.report, '_tab_switch_frequency', 0) or 0:.0f} eventos",
+            f"Intensidade de multitarefa: {getattr(self.report, '_multitasking_intensity', 0) or 0:.1%}",
+            f"Fragmentação do foco: {getattr(self.report, '_focus_fragmentation', 0) or 0:.1%}",
+        ]
+        self._draw_section("MULTITASKING", fragmentation_lines)
+
         # ENGAJAMENTO
         engagement_lines = [
             f"Engajamento pela câmera: {getattr(self.report, '_camera_engagement', 0) or 0:.1%}",
@@ -80,7 +88,6 @@ class ReportPdfFactory:
             f"Participações voluntárias: {getattr(self.report, '_voluntary_participation', 0) or 0:.0f} interações",
         ]
         self._draw_section("ENGAJAMENTO", engagement_lines)
-
 
         # Seção PERIFÉRICOS
         # peripherals_lines = [
