@@ -42,10 +42,6 @@ class ReportPdfFactory:
             f"Disciplina: {self.report._subject_name}",
             f"Docente: {self.report._teacher}",
             f"Total de alunos: {self.report._total_students}",
-            # f"Tempo total assistido: {self.report._total_time_watched or 0:.0f} min",
-            # f"Média de duração da aula: {self.report._avg_lecture_duration or 0:.0f} min",
-            # f"Duração ociosa média: {self.report._avg_idle_duration or 0:.0f} min",
-            # f"Atividade média (atenção): {self.report._avg_attention_span or 0:.0f} min"
         ]
         for line in info_lines:
             self._draw_paragraph(line, normal_style)
