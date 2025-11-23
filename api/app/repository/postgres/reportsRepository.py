@@ -4,8 +4,6 @@ from app.models.postgres.reports import Report
 
 cursor = conn.cursor()
 
-
-
 def createReport(report: Report):
     """
     Cria um novo relatório agregado (por aula/disciplina).
@@ -17,30 +15,16 @@ def createReport(report: Report):
                 report_id,
                 lecture_id,
                 subject_id,
-                total_students,
-                total_time_watched,
-                avg_lecture_duration,
-                avg_idle_duration,
-                avg_attention_span,
-                pct_enabled_camera,
-                pct_enabled_mic,
                 avg_cam_streaming_span,
                 avg_mic_streaming_span,
                 issued_at
-            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            ) VALUES (%s,%s,%s,%s,%s,%s)
             RETURNING *;
         """
         cursor.execute(query, (
             report_id,
             report._lecture_id,
             report._subject_id,
-            report._total_students,
-            report._total_time_watched,
-            report._avg_lecture_duration,
-            report._avg_idle_duration,
-            report._avg_attention_span,
-            report._pct_enabled_camera,
-            report._pct_enabled_mic,
             report._avg_cam_streaming_span,
             report._avg_mic_streaming_span,
             report._issued_at
@@ -54,6 +38,7 @@ def createReport(report: Report):
         conn.rollback()
         print("[REPOSITORY] Erro ao criar report:", e)
         raise e
+
 
 
 def findAllReports():
@@ -70,13 +55,6 @@ def findAllReports():
                 s.name AS subject_name,
                 l.date_lecture,
                 u.email AS teacher,
-                r.total_students,
-                r.total_time_watched,
-                r.avg_lecture_duration,
-                r.avg_idle_duration,
-                r.avg_attention_span,
-                r.pct_enabled_camera,
-                r.pct_enabled_mic,
                 r.avg_cam_streaming_span,
                 r.avg_mic_streaming_span,
                 r.issued_at
@@ -94,16 +72,9 @@ def findAllReports():
             report = Report(
                 lecture_id=row[1],
                 subject_id=row[2],
-                total_students=row[6],
-                total_time_watched=row[7],
-                avg_lecture_duration=row[8],
-                avg_idle_duration=row[9],
-                avg_attention_span=row[10],
-                pct_enabled_camera=row[11],
-                pct_enabled_mic=row[12],
-                avg_cam_streaming_span=row[13],
-                avg_mic_streaming_span=row[14],
-                issued_at=row[15],
+                avg_cam_streaming_span=row[6],
+                avg_mic_streaming_span=row[7],
+                issued_at=row[8],
                 _id=row[0]
             )
             report_dict = report.to_dict()
@@ -119,9 +90,10 @@ def findAllReports():
         raise e
 
 
+
 def findOneReport(report_id):
     """
-    Busca um relatório pelo ID (inclui nome da matéria, data da aula e e-mail do professor)
+    Busca um relatório pelo ID
     """
     try:
         query = """
@@ -132,13 +104,6 @@ def findOneReport(report_id):
                 s.name AS subject_name,
                 l.date_lecture,
                 u.email AS teacher,
-                r.total_students,
-                r.total_time_watched,
-                r.avg_lecture_duration,
-                r.avg_idle_duration,
-                r.avg_attention_span,
-                r.pct_enabled_camera,
-                r.pct_enabled_mic,
                 r.avg_cam_streaming_span,
                 r.avg_mic_streaming_span,
                 r.issued_at
@@ -157,16 +122,9 @@ def findOneReport(report_id):
         report = Report(
             lecture_id=row[1],
             subject_id=row[2],
-            total_students=row[6],
-            total_time_watched=row[7],
-            avg_lecture_duration=row[8],
-            avg_idle_duration=row[9],
-            avg_attention_span=row[10],
-            pct_enabled_camera=row[11],
-            pct_enabled_mic=row[12],
-            avg_cam_streaming_span=row[13],
-            avg_mic_streaming_span=row[14],
-            issued_at=row[15],
+            avg_cam_streaming_span=row[6],
+            avg_mic_streaming_span=row[7],
+            issued_at=row[8],
             _id=row[0]
         )
 
@@ -183,12 +141,16 @@ def findOneReport(report_id):
         raise e
 
 
+
 def getReportByLectureId(lecture_id: str):
     """
     Retorna o relatório pelo lecture_id, se existir.
     """
     try:
-        query = "SELECT * FROM report WHERE lecture_id = %s"
+        query = """
+            SELECT report_id, lecture_id, subject_id, avg_cam_streaming_span, avg_mic_streaming_span, issued_at
+            FROM report WHERE lecture_id = %s
+        """
         cursor.execute(query, (lecture_id,))
         result = cursor.fetchone()
         if result:
@@ -198,6 +160,7 @@ def getReportByLectureId(lecture_id: str):
     except Exception as e:
         print("[REPOSITORY] Erro ao buscar relatório:", e)
         raise e
+
 
 def deleteReport(report_id):
     """
@@ -212,6 +175,7 @@ def deleteReport(report_id):
         conn.rollback()
         print("[REPOSITORY] Erro ao remover report:", e)
         raise e
+
 
 def updateReport(report_id: str, fields: dict):
     """
