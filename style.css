@@ -434,3 +434,7 @@ body {
   display: flex;
   flex-direction: column; 
 }
+
+#report-post-main{
+  width: 15em;
+}
