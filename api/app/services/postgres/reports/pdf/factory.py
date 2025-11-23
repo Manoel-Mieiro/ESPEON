@@ -27,9 +27,38 @@ class ReportPdfFactory:
         self.y -= p.height + spacing
 
     def _draw_section(self, title, lines):
+        self._draw_line()
         self._draw_paragraph(title, section_style)
         for line in lines:
             self._draw_paragraph(line, normal_style)
+    
+
+    def _draw_line(self, thickness=1, spacing=0.03*cm):
+        y_line = self.y - spacing
+        self.c.setLineWidth(thickness)
+        self.c.line(self.x, y_line, self.width - 2*cm, y_line)
+        self.y = y_line - spacing
+
+    def _draw_quartiles(self, trend, spacing=0.6*cm):
+        quartiles = [
+            f"Q1: {trend.get('q1', 0):.0%}",
+            f"Q2: {trend.get('q2', 0):.0%}",
+            f"Q3: {trend.get('q3', 0):.0%}",
+            f"Q4: {trend.get('q4', 0):.0%}",
+        ]
+
+        # largura útil
+        available_width = self.width - 4*cm
+        col_width = available_width / len(quartiles)
+
+        # desenhar
+        for i, text in enumerate(quartiles):
+            x_pos = self.x + i * col_width
+            self.c.drawString(x_pos, self.y, text)
+    
+        # dar espaço abaixo
+        self.y -= spacing
+
 
     def generate(self):
         # Título
@@ -85,19 +114,21 @@ class ReportPdfFactory:
         ]
         self._draw_section("ENGAJAMENTO", engagement_lines)
 
+        # TEMPO
         trend = self.report._engagement_trend or {}
+        self._draw_line(spacing=0.02 * cm)
+        self._draw_paragraph("PADRÕES TEMPORAIS", section_style)
+        self._draw_quartiles(trend)
         trend_lines = [
-                f"Engajamento Q1: {trend.get('q1', 0):.0%}",
-                f"Engajamento Q2: {trend.get('q2', 0):.0%}",
-                f"Engajamento Q3: {trend.get('q3', 0):.0%}",
-                f"Engajamento Q4: {trend.get('q4', 0):.0%}",
-                f"Pico de engajamento: {self.report._peak_engagement_time or 'N/A'}",
-                f"Ponto de queda (50%): {self.report._dropoff_point or 'N/A'}"
-            ]
+            f"Pico de engajamento: {self.report._peak_engagement_time or 'N/A'}",
+            f"Ponto de queda (50%): {self.report._dropoff_point or 'N/A'}"
+        ]
 
-        self._draw_section("PADRÕES TEMPORAIS", trend_lines)
+        for line in trend_lines:
+            self._draw_paragraph(line, normal_style)
 
-        # MÉTRICAS COMPOSTAS DE ENGAJAMENTO
+
+        # SCORES
         score_lines = [
             f"Score geral de engajamento: {getattr(self.report, '_engagement_score', 0) or 0:.1%}",
             f"Saúde da atenção: {getattr(self.report, '_attention_health', 0) or 0:.1%}",
