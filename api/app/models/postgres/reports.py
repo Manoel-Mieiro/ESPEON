@@ -12,6 +12,7 @@ class Report:
         subject_name: str = None,
         teacher: str = None,
         date_lecture: datetime = None,
+        total_students: int = 0,
 
         real_total_session_duration: float = None,
         avg_session_per_student: float = None,
@@ -56,6 +57,7 @@ class Report:
         self._subject_name = subject_name
         self._teacher = teacher
         self._date_lecture = date_lecture or datetime.utcnow()
+        self._total_students = total_students
 
         self._real_total_session_duration = real_total_session_duration
         self._avg_session_per_student = avg_session_per_student
@@ -114,6 +116,7 @@ class Report:
             "subject_name": self._subject_name,
             "teacher": self._teacher,
             "date_lecture": format_date(self._date_lecture, "%d/%m/%Y"),
+            "total_students": self._total_students,
 
             "real_total_session_duration": self._real_total_session_duration,
             "avg_session_per_student": self._avg_session_per_student,
@@ -165,6 +168,7 @@ class Report:
             subject_name=data.get("subject_name"),
             teacher=data.get("teacher"),
             date_lecture=data.get("date_lecture"),
+            total_students=data.get("total_students", 0),
 
             distraction_ratio=data.get("distraction_ratio"),
             distraction_frequency=data.get("distraction_frequency"),
