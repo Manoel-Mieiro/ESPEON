@@ -1,5 +1,5 @@
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_LEFT
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 
 styles = getSampleStyleSheet()
 
@@ -24,6 +24,13 @@ subtitle_style = ParagraphStyle(
     spaceAfter=10,
     alignment=TA_LEFT,
     wordWrap='CJK'
+)
+
+footer_style = ParagraphStyle(
+    name="footer",
+    parent=styles['Normal'],
+    alignment=TA_RIGHT,
+    fontSize=9
 )
 
 section_style = ParagraphStyle(
