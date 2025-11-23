@@ -455,3 +455,8 @@ body {
   border-radius: 4px;
   padding: 5px;
 }
+
+
+#reports-select-selectors ul{
+  gap: 3px;
+}
