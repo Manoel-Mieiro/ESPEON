@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const navMap = {
     lectures_nav: "lecture.html",
-    reports_nav: "reports.html",
+    reports_nav: "reports_select.html",
   };
 
   // Resolução de nome
