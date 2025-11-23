@@ -27,12 +27,6 @@ def createReport(data):
             lecture_id=data["lecture_id"],
             subject_id=subject_id,
             total_students=data.get("total_students", 0),
-            total_time_watched=data.get("total_time_watched", 0),
-            avg_lecture_duration=data.get("avg_lecture_duration"),
-            avg_idle_duration=data.get("avg_idle_duration"),
-            avg_attention_span=data.get("avg_attention_span"),
-            pct_enabled_camera=data.get("pct_enabled_camera"),
-            pct_enabled_mic=data.get("pct_enabled_mic"),
             avg_cam_streaming_span=data.get("avg_cam_streaming_span"),
             avg_mic_streaming_span=data.get("avg_mic_streaming_span")
         )
@@ -60,12 +54,6 @@ def updateReport(report_id, data):
             lecture_id=data["lecture_id"],
             subject_id=data["subject_id"],
             total_students=data.get("total_students", 0),
-            total_time_watched=data.get("total_time_watched", 0),
-            avg_lecture_duration=data.get("avg_lecture_duration"),
-            avg_idle_duration=data.get("avg_idle_duration"),
-            avg_attention_span=data.get("avg_attention_span"),
-            pct_enabled_camera=data.get("pct_enabled_camera"),
-            pct_enabled_mic=data.get("pct_enabled_mic"),
             avg_cam_streaming_span=data.get("avg_cam_streaming_span"),
             avg_mic_streaming_span=data.get("avg_mic_streaming_span")
         )
