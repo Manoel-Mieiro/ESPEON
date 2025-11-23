@@ -69,12 +69,10 @@ function renderReports() {
         </div>
         <div class="report-card-content-container">
             <div class="report-card-content">
-                <p>Disciplina: ${r.subject_id}</p>
-                <p>Total de alunos: ${r.total_students}</p>
-                <p>Tempo total assistido: ${Math.round(
-                  r.total_time_watched
-                )} min</p>
-                <p>Data: ${r.issued_at} min</p>
+                <p>Disciplina: ${r.subject_name}</p>
+                <p>Docente: ${r.teacher}</p>
+                <p>Data aula: ${r.date_lecture}</p>
+                <p>Emitido em: ${r.issued_at} min</p>
             </div>
         </div>
     </div>
