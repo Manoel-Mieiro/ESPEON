@@ -198,27 +198,7 @@ def populateReportMetrics(report: object):
     metrics['engagement_score'] = calculate_engagement_score(metrics)
     metrics['attention_health'] = calculate_attention_health(metrics)
     metrics['distraction_risk'] = calculate_distraction_risk(metrics)
-
-    metrics['total_time_watched'] = calculateTotalTimeWatched(
-        report._lecture_id)
-    metrics['avg_lecture_duration'] = calculateAvgLectureDuration(
-        report._subject_id)
-    metrics['pct_enabled_camera'], metrics['pct_enabled_mic'] = calculateCameraMicUsage(
-        traces)
-    metrics['avg_idle_duration'] = calculateAvgIdle(traces)
-    metrics['avg_attention_span'] = calculateAvgAttentionSpan(
-        traces,
-        metrics['total_time_watched'],
-        metrics['total_students'],
-        metrics['avg_idle_duration']
-    )
-    metrics['min_idle_duration'], metrics['max_idle_duration'] = getIdleMinMax(
-        traces)
-    metrics['min_attention_span'], metrics['max_attention_span'] = getAttentionSpanMinMax(
-        traces,
-        metrics['total_time_watched'],
-        metrics['total_students']
-    )
+    
     metrics['lecture_alias'] = traces[0].get("classTitle") if traces else None
 
     for k, v in metrics.items():
