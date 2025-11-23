@@ -32,6 +32,9 @@ document.addEventListener("submit", async (event) => {
     alert("Por favor, preencha todos os campos.");
     return;
   }
+  
+  chrome.storage.session.set({ savedEmail: email });
+  
   try {
     const response = await api.callAPI(
       "POST",
@@ -43,7 +46,8 @@ document.addEventListener("submit", async (event) => {
     );
 
     if (response) {
-      chrome.storage.session.remove("state", () => {});
+      chrome.storage.session.set({ savedEmail: email });
+      chrome.storage.session.remove("state");
       alert("Cadastro Concluído!");
       window.location.href = "redirect.html";
     } else {

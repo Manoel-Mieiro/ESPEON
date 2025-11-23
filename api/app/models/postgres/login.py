@@ -1,3 +1,4 @@
+from app.utils.time_utils import get_current_datetime
 from typing import Optional
 import datetime
 
@@ -13,7 +14,7 @@ class Login:
         self.login_id = login_id  # UUID do login
         self.user_id = user_id    # UUID do usuário
         self.token = token
-        self.created_at = created_at or datetime.datetime.now(datetime.timezone.utc)
+        self.created_at = created_at or get_current_datetime()
 
     def to_dict(self):
         """
