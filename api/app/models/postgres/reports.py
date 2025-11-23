@@ -8,6 +8,7 @@ class Report:
         self,
         lecture_id: str,
         subject_id: str,
+        lecture_alias: str = None,
         subject_name: str = None,
         teacher: str = None,
         date_lecture: datetime = None,
@@ -51,6 +52,7 @@ class Report:
         self._id = _id
         self._lecture_id = lecture_id
         self._subject_id = subject_id
+        self._lecture_alias = lecture_alias
         self._subject_name = subject_name
         self._teacher = teacher
         self._date_lecture = date_lecture or datetime.utcnow()
@@ -108,6 +110,7 @@ class Report:
         data = {
             "lecture_id": self._lecture_id,
             "subject_id": self._subject_id,
+            "lecture_alias": self._lecture_alias,
             "subject_name": self._subject_name,
             "teacher": self._teacher,
             "date_lecture": format_date(self._date_lecture, "%d/%m/%Y"),
@@ -158,6 +161,7 @@ class Report:
         return Report(
             lecture_id=data["lecture_id"],
             subject_id=data["subject_id"],
+            lecture_alias=data["lecture_alias"],
             subject_name=data.get("subject_name"),
             teacher=data.get("teacher"),
             date_lecture=data.get("date_lecture"),
