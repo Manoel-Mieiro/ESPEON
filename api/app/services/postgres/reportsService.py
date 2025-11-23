@@ -1,3 +1,4 @@
+from app.utils.time_utils import get_current_datetime
 from app.services.postgres.reports.metricsCalc.participation import (
     calculate_camera_engagement,
     calculate_mic_engagement,
@@ -103,7 +104,7 @@ def createReport(report: Report):
             print(
                 f"[SERVICE] Relatório já existe para lecture_id={report._lecture_id}. Atualizando issued_at...")
             updated = reportsRepository.updateReport(existing_report["report_id"], {
-                "issued_at": datetime.utcnow()
+                "issued_at": get_current_datetime()
             })
             return updated
 
