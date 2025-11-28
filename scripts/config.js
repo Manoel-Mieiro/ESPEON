@@ -1,4 +1,4 @@
-const ENV = 'DSV'
+const ENV = 'PRD'
 
 const BASE_URLS = {
   DSV: "http://localhost:8183",
