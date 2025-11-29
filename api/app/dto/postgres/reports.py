@@ -38,11 +38,6 @@ class ReportDTO:
         attention_health: float = None,
         distraction_risk: float = None,
 
-        avg_cam_streaming_span: float = None,
-        avg_mic_streaming_span: float = None,
-        min_lecture_duration: float = None,
-        max_lecture_duration: float = None,
-
         issued_at: str = None
     ):
         if not lecture_id or not subject_id:
@@ -85,11 +80,6 @@ class ReportDTO:
         self.attention_health = attention_health
         self.distraction_risk = distraction_risk
 
-        self.avg_cam_streaming_span = avg_cam_streaming_span
-        self.avg_mic_streaming_span = avg_mic_streaming_span
-        self.min_lecture_duration = min_lecture_duration
-        self.max_lecture_duration = max_lecture_duration
-
         self.issued_at = (
             datetime.strptime(issued_at, "%Y-%m-%d %H:%M:%S")
             if issued_at else get_current_datetime()
@@ -131,11 +121,6 @@ class ReportDTO:
             engagement_score=self.engagement_score,
             attention_health=self.attention_health,
             distraction_risk=self.distraction_risk,
-
-            avg_cam_streaming_span=self.avg_cam_streaming_span,
-            avg_mic_streaming_span=self.avg_mic_streaming_span,
-            min_lecture_duration=self.min_lecture_duration,
-            max_lecture_duration=self.max_lecture_duration,
 
             issued_at=self.issued_at
         )

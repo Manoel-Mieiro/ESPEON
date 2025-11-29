@@ -42,11 +42,6 @@ class Report:
         attention_health: float = None,
         distraction_risk: float = None,
 
-        avg_cam_streaming_span: float = None,
-        avg_mic_streaming_span: float = None,
-        min_lecture_duration: float = None,
-        max_lecture_duration: float = None,
-
         issued_at: datetime = None,
         _id: ObjectId = None
     ):
@@ -92,11 +87,6 @@ class Report:
         self._engagement_score = engagement_score
         self._attention_health = attention_health
         self._distraction_risk = distraction_risk
-
-        self._avg_cam_streaming_span = avg_cam_streaming_span
-        self._avg_mic_streaming_span = avg_mic_streaming_span
-        self._min_lecture_duration = min_lecture_duration
-        self._max_lecture_duration = max_lecture_duration
 
         self._issued_at = issued_at or get_current_datetime()
 
@@ -146,11 +136,6 @@ class Report:
             "attention_health": self._attention_health,
             "distraction_risk": self._distraction_risk,
 
-            "avg_cam_streaming_span": self._avg_cam_streaming_span,
-            "avg_mic_streaming_span": self._avg_mic_streaming_span,
-            "min_lecture_duration": self._min_lecture_duration,
-            "max_lecture_duration": self._max_lecture_duration,
-
             "issued_at": format_date(self._issued_at),
         }
 
@@ -161,7 +146,9 @@ class Report:
 
     @staticmethod
     def from_dict(data):
+        _id = data.get('report_id') or data.get('_id')
         return Report(
+             _id=_id,
             lecture_id=data["lecture_id"],
             subject_id=data["subject_id"],
             lecture_alias=data["lecture_alias"],
@@ -188,11 +175,6 @@ class Report:
             engagement_score=data.get("engagement_score"),
             attention_health=data.get("attention_health"),
             distraction_risk=data.get("distraction_risk"),
-
-            avg_cam_streaming_span=data.get("avg_cam_streaming_span"),
-            avg_mic_streaming_span=data.get("avg_mic_streaming_span"),
-            min_lecture_duration=data.get("min_lecture_duration"),
-            max_lecture_duration=data.get("max_lecture_duration"),
 
             issued_at=data.get("issued_at"),
         )
