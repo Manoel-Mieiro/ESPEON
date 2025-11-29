@@ -1,4 +1,5 @@
-from app.utils.time_utils import get_current_datetime
+from app.utils.time_utils import (
+    get_current_datetime, convert_time_objects_to_string)
 from app.services.postgres.reports.metricsCalc.participation import (
     calculate_camera_engagement,
     calculate_mic_engagement,
@@ -51,7 +52,7 @@ from app.services.postgres.reports.metrics import (
     getIdleMinMax,
     getAttentionSpanMinMax
 )
-from datetime import datetime
+from datetime import datetime, time, date
 from app.models.postgres.reports import Report
 import app.repository.postgres.reportsRepository as reportsRepository
 import app.repository.tracesRepository as tracesRepository
@@ -86,11 +87,32 @@ CRUDS
 
 def findAllReports():
     try:
-        return reportsRepository.findAllReports()
+        reports_data = reportsRepository.findAllReports()
+        
+        if not reports_data:
+            return []
+        
+        processed_reports = []
+        for report_data in reports_data:
+            try:
+                
+                report_obj = Report.from_dict(report_data)
+                
+                populated_report = populateReportMetrics(report_obj)
+                
+                report_dict = populated_report.to_dict()
+                
+                processed_reports.append(report_dict)
+                
+            except Exception as e:
+                print(f"[SERVICE] Error processing report: {e}")
+                processed_reports.append(convert_time_objects_to_string(report_data))
+        
+        return processed_reports
+        
     except Exception as e:
         print("[SERVICE] Error fetching reports:", e)
         raise e
-
 
 def createReport(report: Report):
     """
@@ -102,15 +124,69 @@ def createReport(report: Report):
 
         if existing_report:
             print(
-                f"[SERVICE] Relatório já existe para lecture_id={report._lecture_id}. Atualizando issued_at...")
-            updated = reportsRepository.updateReport(existing_report["report_id"], {
-                "issued_at": get_current_datetime()
-            })
+                f"[SERVICE] Relatório já existe para lecture_id={report._lecture_id}. Atualizando métricas...")
+
+            populated_report = populateReportMetrics(report)
+
+            update_data = {
+                "issued_at": get_current_datetime(),
+                "total_students": populated_report._total_students,
+                "real_total_session_duration": populated_report._real_total_session_duration,
+                "avg_session_per_student": populated_report._avg_session_per_student,
+                "attendance_ratio": populated_report._attendance_ratio,
+                "lecture_focus_ratio": populated_report._lecture_focus_ratio,
+                "avg_focus_duration": populated_report._avg_focus_duration,
+                "max_focus_duration": populated_report._max_focus_duration,
+                "distraction_ratio": populated_report._distraction_ratio,
+                "distraction_frequency": populated_report._distraction_frequency,
+                "main_distractions": populated_report._main_distractions or [],
+                "tab_switch_frequency": populated_report._tab_switch_frequency,
+                "multitasking_intensity": populated_report._multitasking_intensity,
+                "focus_fragmentation": populated_report._focus_fragmentation,
+                "camera_engagement": populated_report._camera_engagement,
+                "mic_engagement": populated_report._mic_engagement,
+                "voluntary_participation": populated_report._voluntary_participation,
+                "engagement_trend": populated_report._engagement_trend or {},
+                "peak_engagement_time": populated_report._peak_engagement_time,
+                "dropoff_point": populated_report._dropoff_point,
+                "engagement_score": populated_report._engagement_score,
+                "attention_health": populated_report._attention_health,
+                "distraction_risk": populated_report._distraction_risk,
+                "lecture_alias": populated_report._lecture_alias,
+                "subject_name": populated_report._subject_name,
+                "teacher": populated_report._teacher
+            }
+
+            update_data = {k: v for k, v in update_data.items()
+                           if v is not None}
+
+            print("[DEBUG] Checking for time objects before conversion:")
+            for key, value in update_data.items():
+                if isinstance(value, (datetime, time, date)):
+                    print(
+                        f"  Found time object at {key}: {value} (type: {type(value)})")
+
+            update_data = convert_time_objects_to_string(update_data)
+
+            print("[DEBUG] After conversion:")
+            for key, value in update_data.items():
+                if any(time_type in str(type(value)) for time_type in ['time', 'datetime', 'date']):
+                    print(
+                        f"  STILL time object at {key}: {value} (type: {type(value)})")
+
+            updated = reportsRepository.updateReport(
+                existing_report["report_id"], update_data)
             return updated
 
         print(
             f"[SERVICE] Criando novo relatório para lecture_id={report._lecture_id}...")
-        return reportsRepository.createReport(report)
+
+        populated_report = populateReportMetrics(report)
+
+        if not populated_report._issued_at:
+            populated_report._issued_at = get_current_datetime()
+
+        return reportsRepository.createReport(populated_report)
 
     except Exception as e:
         print("[SERVICE] Error creating report:", e)
@@ -199,7 +275,7 @@ def populateReportMetrics(report: object):
     metrics['engagement_score'] = calculate_engagement_score(metrics)
     metrics['attention_health'] = calculate_attention_health(metrics)
     metrics['distraction_risk'] = calculate_distraction_risk(metrics)
-    
+
     metrics['lecture_alias'] = traces[0].get("classTitle") if traces else None
 
     for k, v in metrics.items():
