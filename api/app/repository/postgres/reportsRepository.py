@@ -26,7 +26,7 @@ def _get_lecture_details(lecture_id: str, subject_id: str):
         result = cursor.fetchone()
         
         if result:
-            return result[0], result[1], result[2]  # Agora retorna 3 valores
+            return result[0], result[1], result[2] 
         else:
             print(f"[REPOSITORY] Detalhes não encontrados para lecture_id={lecture_id}, subject_id={subject_id}")
             return None, None, None
