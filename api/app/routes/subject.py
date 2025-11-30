@@ -1,8 +1,10 @@
 from flask import jsonify, Blueprint, request
 import app.controllers.subject as subjectController
+from app.swagger.subjects import register_swagger_routes
 
 subjects_bp = Blueprint("subjects", __name__)
 
+subjects_ns = register_swagger_routes()
 
 @subjects_bp.route("/subjects", methods=["GET"])
 def get_all_subjects():
@@ -10,7 +12,6 @@ def get_all_subjects():
         return jsonify(subjectController.findAllSubjects()), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @subjects_bp.route("/subjects/<subject_id>", methods=["GET"])
 def get_one_subject(subject_id):
@@ -22,7 +23,6 @@ def get_one_subject(subject_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @subjects_bp.route("/subjects", methods=["POST"])
 def create_subject():
     try:
@@ -32,7 +32,6 @@ def create_subject():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @subjects_bp.route("/subjects/<subject_id>", methods=["PUT"])
 def update_subject(subject_id):
     try:
@@ -41,7 +40,6 @@ def update_subject(subject_id):
         return jsonify({"success": success})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @subjects_bp.route("/subjects/<subject_id>", methods=["DELETE"])
 def delete_subject(subject_id):
