@@ -4,7 +4,7 @@ import time
 import os
 from app.utils.logger import app_logger, api_logger
 from app.routes.traces import traces_bp, traces_ns
-from app.routes.users import users_bp
+from app.routes.users import users_bp, users_ns
 from app.routes.login import login_bp, login_ns
 from app.routes.lectures import lectures_bp, lectures_ns
 from app.routes.subject import subjects_bp, subjects_ns
@@ -33,6 +33,7 @@ def create_app():
     api.add_namespace(subjects_ns, path='/subjects') 
     api.add_namespace(traces_ns, path='/traces') 
     api.add_namespace(lectures_ns, path='/lectures') 
+    api.add_namespace(users_ns, path='/users') 
     
     app_logger.startup("Inicializando aplicação Flask", {
         'port': os.getenv('FLASK_RUN_PORT'),

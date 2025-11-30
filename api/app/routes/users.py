@@ -1,8 +1,11 @@
 from flask import jsonify, Blueprint, request
 import app.controllers.users as userController
+import uuid
+from app.swagger.users import register_swagger_routes
 
 users_bp = Blueprint("users", __name__)
 
+users_ns = register_swagger_routes()
 
 @users_bp.route("/users", methods=["GET"])
 def get_all_users():
@@ -10,7 +13,6 @@ def get_all_users():
         return jsonify(userController.findAllUsers()), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @users_bp.route("/users", methods=["POST"])
 def create_user():
@@ -20,9 +22,6 @@ def create_user():
         return jsonify({"message": "Usuário cadastrado com sucesso"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-import uuid
 
 @users_bp.route("/users/<identifier>", methods=["GET"])
 def findOneUser(identifier):
@@ -43,9 +42,6 @@ def findOneUser(identifier):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
-
 @users_bp.route("/users/<user_id>", methods=["PUT"])
 def update_user(user_id):
     try:
@@ -53,7 +49,6 @@ def update_user(user_id):
         return jsonify(userController.updateUser(user_id, data))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @users_bp.route("/users/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
