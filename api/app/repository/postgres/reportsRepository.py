@@ -9,13 +9,14 @@ table = "report_2"
 
 def _get_lecture_details(lecture_id: str, subject_id: str):
     """
-    Busca o nome da matéria e o email do professor para uma lecture
+    Busca o nome da matéria, o email do professor e a data da aula para uma lecture
     """
     try:
         query = """
             SELECT 
                 s.name AS subject_name,
-                u.email AS teacher_email
+                u.email AS teacher_email,
+                l.date_lecture  -- Adicionando a data da aula
             FROM lecture l
             JOIN subject s ON l.subject_id = s.subject_id
             JOIN users u ON l.teacher_id = u.user_id
@@ -25,18 +26,18 @@ def _get_lecture_details(lecture_id: str, subject_id: str):
         result = cursor.fetchone()
         
         if result:
-            return result[0], result[1]  
+            return result[0], result[1], result[2]  # Agora retorna 3 valores
         else:
             print(f"[REPOSITORY] Detalhes não encontrados para lecture_id={lecture_id}, subject_id={subject_id}")
-            return None, None
+            return None, None, None
             
     except Exception as e:
         print(f"[REPOSITORY] Erro ao buscar detalhes da aula: {e}")
-        return None, None
+        return None, None, None
 
 def createReport(report: Report): 
     try:
-        subject_name, teacher_email = _get_lecture_details(report._lecture_id, report._subject_id) 
+        subject_name, teacher_email, date_lecture = _get_lecture_details(report._lecture_id, report._subject_id) 
         
         report_dict = report.to_dict()
         
@@ -44,6 +45,7 @@ def createReport(report: Report):
             "report_id": report._id or str(uuid.uuid4()),
             "subject_name": subject_name,
             "teacher": teacher_email,
+            "date_lecture": date_lecture  
         })
         
         report_dict = {k: v for k, v in report_dict.items() if v is not None}
