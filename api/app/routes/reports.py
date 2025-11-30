@@ -1,8 +1,10 @@
 from flask import Blueprint, request, jsonify
 from app.controllers import reports as reportController
+from app.swagger.reports import register_swagger_routes
 
 report_bp = Blueprint("report_bp", __name__, url_prefix="/reports")
 
+report_ns = register_swagger_routes()
 
 @report_bp.route("/", methods=["GET"])
 def get_all_reports():
@@ -10,7 +12,6 @@ def get_all_reports():
         return jsonify(reportController.findAllReports()), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @report_bp.route("/", methods=["POST"])
 def create_report():
@@ -20,14 +21,12 @@ def create_report():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @report_bp.route("/<report_id>", methods=["GET"])
 def get_report(report_id):
     try:
         return jsonify(reportController.findOneReport(report_id)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 404
-
 
 @report_bp.route("/<report_id>", methods=["PUT"])
 def update_report(report_id):
@@ -36,7 +35,6 @@ def update_report(report_id):
         return jsonify(reportController.updateReport(report_id, data)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @report_bp.route("/<report_id>", methods=["DELETE"])
 def delete_report(report_id):
