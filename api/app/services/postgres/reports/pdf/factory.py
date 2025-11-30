@@ -127,7 +127,7 @@ class ReportPdfFactory:
 
         # BASE
         base_lines = [
-            f"Tempo total real de sessão: {getattr(self.report, '_real_total_session_duration', 0) or 0:.1f} min",
+            f"Duração da Aula: {getattr(self.report, '_lecture_length', 0) or 0:.1f} min",
             f"Tempo médio por aluno: {getattr(self.report, '_avg_session_per_student', 0) or 0:.1f} min",
             f"Taxa de presença: {getattr(self.report, '_attendance_ratio', 0) or 0:.1%}"
         ]

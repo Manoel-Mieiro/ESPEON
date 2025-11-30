@@ -10,7 +10,7 @@ class ReportDTO:
         subject_id: str,
         total_students: int = 0,
 
-        real_total_session_duration: float = None,
+        lecture_length: float = None,
         avg_session_per_student: float = None,
         attendance_ratio: float = None,
 
@@ -47,7 +47,7 @@ class ReportDTO:
         self.subject_id = subject_id
         self.total_students = total_students
 
-        self.real_total_session_duration = real_total_session_duration
+        self.lecture_length = lecture_length
         self.avg_session_per_student = avg_session_per_student
         self.attendance_ratio = attendance_ratio
 
@@ -94,7 +94,7 @@ class ReportDTO:
             subject_id=self.subject_id,
             total_students=self.total_students,
 
-            real_total_session_duration=self.real_total_session_duration,
+            lecture_length=self.lecture_length,
             avg_session_per_student=self.avg_session_per_student,
             attendance_ratio=self.attendance_ratio,
 

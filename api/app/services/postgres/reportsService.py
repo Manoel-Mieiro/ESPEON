@@ -88,31 +88,33 @@ CRUDS
 def findAllReports():
     try:
         reports_data = reportsRepository.findAllReports()
-        
+
         if not reports_data:
             return []
-        
+
         processed_reports = []
         for report_data in reports_data:
             try:
-                
+
                 report_obj = Report.from_dict(report_data)
-                
+
                 populated_report = populateReportMetrics(report_obj)
-                
+
                 report_dict = populated_report.to_dict()
-                
+
                 processed_reports.append(report_dict)
-                
+
             except Exception as e:
                 print(f"[SERVICE] Error processing report: {e}")
-                processed_reports.append(convert_time_objects_to_string(report_data))
-        
+                processed_reports.append(
+                    convert_time_objects_to_string(report_data))
+
         return processed_reports
-        
+
     except Exception as e:
         print("[SERVICE] Error fetching reports:", e)
         raise e
+
 
 def createReport(report: Report):
     """
@@ -131,7 +133,7 @@ def createReport(report: Report):
             update_data = {
                 "issued_at": get_current_datetime(),
                 "total_students": populated_report._total_students,
-                "real_total_session_duration": populated_report._real_total_session_duration,
+                "lecture_length": populated_report._lecture_length,
                 "avg_session_per_student": populated_report._avg_session_per_student,
                 "attendance_ratio": populated_report._attendance_ratio,
                 "lecture_focus_ratio": populated_report._lecture_focus_ratio,
@@ -234,8 +236,7 @@ def populateReportMetrics(report: object):
     metrics['total_students'] = calculateTotalStudents(traces)
 
     # 1. Métricas base
-    metrics['real_total_session_duration'] = calculate_real_total_session_duration(
-        traces)
+    metrics['lecture_length'] = calculateTotalTimeWatched(report._lecture_id)
     metrics['avg_session_per_student'] = calculate_real_avg_session_per_student(
         traces)
     metrics['attendance_ratio'] = calculate_attendance_ratio(

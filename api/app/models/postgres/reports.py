@@ -14,7 +14,7 @@ class Report:
         date_lecture: datetime = None,
         total_students: int = 0,
 
-        real_total_session_duration: float = None,
+        lecture_length: float = None,
         avg_session_per_student: float = None,
         attendance_ratio: float = None,
 
@@ -54,7 +54,7 @@ class Report:
         self._date_lecture = date_lecture or datetime.utcnow()
         self._total_students = total_students
 
-        self._real_total_session_duration = real_total_session_duration
+        self._lecture_length = lecture_length
         self._avg_session_per_student = avg_session_per_student
         self._attendance_ratio = attendance_ratio
 
@@ -108,7 +108,7 @@ class Report:
             "date_lecture": format_date(self._date_lecture, "%d/%m/%Y"),
             "total_students": self._total_students,
 
-            "real_total_session_duration": self._real_total_session_duration,
+            "lecture_length": self._lecture_length,
             "avg_session_per_student": self._avg_session_per_student,
             "attendance_ratio": self._attendance_ratio,
 
