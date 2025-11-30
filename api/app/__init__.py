@@ -5,14 +5,11 @@ import os
 from app.utils.logger import app_logger, api_logger
 from app.routes.traces import traces_bp
 from app.routes.users import users_bp
-from app.routes.login import login_bp
+from app.routes.login import login_bp, login_ns
 from app.routes.lectures import lectures_bp
 from app.routes.subject import subjects_bp
-from app.routes.reports import report_bp
+from app.routes.reports import report_bp, report_ns
 from app.routes.reportsStudent import report_student_bp
-
-# Importar e registrar namespaces do Swagger
-from app.routes.reports import report_ns
 
 def create_app():
     app = Flask(__name__)
@@ -31,7 +28,8 @@ def create_app():
     
     
     
-    api.add_namespace(report_ns, path='/reports')    
+    api.add_namespace(report_ns, path='/reports')   
+    api.add_namespace(login_ns, path='/auth')  
     
     app_logger.startup("Inicializando aplicação Flask", {
         'port': os.getenv('FLASK_RUN_PORT'),
