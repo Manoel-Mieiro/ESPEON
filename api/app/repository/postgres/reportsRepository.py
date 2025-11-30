@@ -7,7 +7,7 @@ from app.models.postgres.reports import Report
 cursor = conn.cursor()
 table = "report_2"
 
-def _get_lecture_details(self, lecture_id: str, subject_id: str):
+def _get_lecture_details(lecture_id: str, subject_id: str):
     """
     Busca o nome da matéria e o email do professor para uma lecture
     """
@@ -34,19 +34,24 @@ def _get_lecture_details(self, lecture_id: str, subject_id: str):
         print(f"[REPOSITORY] Erro ao buscar detalhes da aula: {e}")
         return None, None
 
-def createReport(self, report: Report):
+def createReport(report: Report): 
     try:
-        subject_name, teacher_email = self._get_lecture_details(report._lecture_id, report._subject_id)
+        subject_name, teacher_email = _get_lecture_details(report._lecture_id, report._subject_id) 
         
         report_dict = report.to_dict()
         
         report_dict.update({
-            "report_id": report._report_id or str(uuid.uuid4()),
+            "report_id": report._id or str(uuid.uuid4()),
             "subject_name": subject_name,
             "teacher": teacher_email,
         })
         
         report_dict = {k: v for k, v in report_dict.items() if v is not None}
+        
+        for key, value in report_dict.items():
+            if isinstance(value, dict):
+                report_dict[key] = Json(value)  # Convert dict to PostgreSQL JSON
+                print(f"[DEBUG] Converted {key} to JSON: {value}")
         
         report_dict = convert_time_objects_to_string(report_dict)
             
@@ -60,11 +65,13 @@ def createReport(self, report: Report):
             RETURNING report_id;
         """
         
+        print("[DEBUG] Executing query...")
         cursor.execute(query, values)
         conn.commit()
         
         result = cursor.fetchone()
         if result:
+            print(f"[DEBUG] Report created successfully with ID: {result[0]}")
             return result[0]
         else:
             raise Exception("Falha ao criar relatório - nenhum ID retornado")
