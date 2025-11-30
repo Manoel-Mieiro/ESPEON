@@ -43,6 +43,21 @@ class FlaskLogger:
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)
 
+    def email_operation(self, operation, recipient, status=None, subject=None, duration=None, error=None, email_type="token"):
+        extra_data = {
+            'operation': operation,
+            'recipient': recipient,
+            'status': status,
+            'subject': subject,
+            'duration': duration,
+            'error': error,
+            'email_type': email_type,
+            'type': 'email_operation'
+        }
+        
+        level = 'INFO' if status == 'success' else 'ERROR'
+        self._log(level, f'EMAIL {operation} to {recipient} - {status}', extra_data)
+
     def debug(self, message, extra_data=None):
         self._log('DEBUG', message, extra_data)
 

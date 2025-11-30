@@ -4,6 +4,7 @@ from app.utils.logger import auth_logger, db_logger
 import string
 import random
 import datetime
+import time
 from app.services.email import sendMail
 
 
@@ -54,33 +55,110 @@ def updateToken(user):
     """
     Gera um novo token para o usuário e envia por email
     """
+    user_id = user["_id"]
+    user_email = user["email"]
+    
     try:
+        auth_logger.info("Service: Iniciando atualização de token", {
+            'user_id': user_id,
+            'email': user_email,
+            'operation': 'token_update_start'
+        })
+        
+        auth_logger.debug("Service: Gerando novo token", {
+            'user_id': user_id,
+            'email': user_email
+        })
+        
         tkn = generateToken()
         generatedAt = get_current_datetime()
         
-        auth_logger.debug("Service: Atualizando token no banco", {
-            'user_id': user["_id"],
-            'email': user["email"],
-            'token_gerado': tkn,
+        token_preview = f"{tkn[:8]}..." if len(tkn) > 8 else tkn
+        auth_logger.debug("Service: Token gerado com sucesso", {
+            'user_id': user_id,
+            'email': user_email,
+            'token_preview': token_preview,
+            'token_length': len(tkn),
             'generated_at': generatedAt
         })
 
-        login.updateToken(user_id=user["_id"], newToken=tkn, created_at=generatedAt)
-        
-        auth_logger.debug("Service: Enviando token por email", {'email': user["email"]})
-        sendMail(user["email"], tkn)
-
-        auth_logger.info("Service: Token atualizado e enviado com sucesso", {
-            'user_id': user["_id"],
-            'email': user["email"]
+        auth_logger.debug("Service: Atualizando token no banco de dados", {
+            'user_id': user_id,
+            'email': user_email,
+            'operation': 'database_update'
         })
+        
+        login.updateToken(user_id=user_id, newToken=tkn, created_at=generatedAt)
+        
+        auth_logger.info("Service: Token atualizado no banco com sucesso", {
+            'user_id': user_id,
+            'email': user_email
+        })
+
+        auth_logger.debug("Service: Preparando envio de email", {
+            'user_id': user_id,
+            'email': user_email,
+            'operation': 'email_preparation'
+        })
+        
+        email_start_time = time.time()
+        
+        try:
+            sendMail(user_email, tkn)
+            email_duration = round((time.time() - email_start_time) * 1000, 2)  # em ms
+            
+            auth_logger.email_operation(
+                operation="send_token",
+                recipient=user_email,
+                status="success",
+                subject="Token de Acesso",
+                duration=email_duration,
+                email_type="authentication"
+            )
+            
+            auth_logger.info("Service: Token enviado por email com sucesso", {
+                'user_id': user_id,
+                'email': user_email,
+                'email_duration_ms': email_duration
+            })
+            
+        except Exception as email_error:
+            email_duration = round((time.time() - email_start_time) * 1000, 2)
+            
+            auth_logger.email_operation(
+                operation="send_token",
+                recipient=user_email,
+                status="error",
+                subject="Token de Acesso",
+                duration=email_duration,
+                error=str(email_error),
+                email_type="authentication"
+            )
+            
+            auth_logger.error("Service: Erro no envio do email", {
+                'user_id': user_id,
+                'email': user_email,
+                'error': str(email_error),
+                'email_duration_ms': email_duration
+            })
+            raise email_error
+
+        auth_logger.info("Service: Processo de atualização de token concluído com sucesso", {
+            'user_id': user_id,
+            'email': user_email,
+            'token_generated_at': generatedAt,
+            'total_operation': 'token_update_complete'
+        })
+        
         return {"newToken": tkn}
         
     except Exception as e:
-        auth_logger.error("Service: Erro ao atualizar token", {
-            'user_id': user["_id"],
-            'email': user["email"],
-            'error': str(e)
+        auth_logger.error("Service: Erro geral no processo de atualização de token", {
+            'user_id': user_id,
+            'email': user_email,
+            'error_type': type(e).__name__,
+            'error_message': str(e),
+            'operation': 'token_update_failed'
         })
         raise
 
