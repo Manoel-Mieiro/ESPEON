@@ -3,7 +3,7 @@ from flask_restx import Api
 import time
 import os
 from app.utils.logger import app_logger, api_logger
-from app.routes.traces import traces_bp
+from app.routes.traces import traces_bp, traces_ns
 from app.routes.users import users_bp
 from app.routes.login import login_bp, login_ns
 from app.routes.lectures import lectures_bp
@@ -31,6 +31,7 @@ def create_app():
     api.add_namespace(report_ns, path='/reports')   
     api.add_namespace(login_ns, path='/auth') 
     api.add_namespace(subjects_ns, path='/subjects') 
+    api.add_namespace(traces_ns, path='/traces') 
     
     app_logger.startup("Inicializando aplicação Flask", {
         'port': os.getenv('FLASK_RUN_PORT'),
