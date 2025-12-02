@@ -46,13 +46,12 @@ def calculateTotalTimeWatched(lecture_id):
         print(
             f"[SERVICE] Calculando total_time_watched para lecture_id={lecture_id}")
 
-        lecture = findLecturesBySubject(lecture_id)
+        lectures = findLecturesBySubject(lecture_id)
         
-        if not lecture:
-            return jsonify({"error": f"Aula {lecture_id} não encontrada"}), 404
-
-        if not lecture:
-            raise ValueError(f"Aula {lecture_id} não encontrada.")
+        if not lectures or len(lectures) == 0:
+            raise ValueError(f"Aula {lecture_id} não encontrada")
+        
+        lecture = lectures[0] if isinstance(lectures, list) else lectures
 
         period_start = lecture.get("period_start")
         period_end = lecture.get("period_end")
