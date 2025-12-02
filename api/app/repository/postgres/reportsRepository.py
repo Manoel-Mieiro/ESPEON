@@ -5,7 +5,7 @@ from pg import conn
 from app.models.postgres.reports import Report
 
 cursor = conn.cursor()
-table = "report_2"
+table = "reports"
 
 def _get_lecture_details(lecture_id: str, subject_id: str):
     """
