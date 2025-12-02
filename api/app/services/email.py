@@ -8,7 +8,7 @@ def sendMail(who, token):
     api_key = os.getenv("RESEND_API_KEY")
     
     data = {
-        "from": "onboarding@resend.dev",  
+        "from": "espeon@mieiro.online",
         "to": who,
         "subject": "Código de Acesso - ESPEON",
         "html": f"<p>Aqui está seu código de acesso: <strong>{token}</strong></p>",
@@ -27,11 +27,11 @@ def sendMail(who, token):
         )
         
         if response.status_code == 200:
-            print(f"[EMAIL] Enviado para {who}")
+            print(f"[EMAIL]Enviado para {who}")
             return True
         else:
-            print(f"[EMAIL] Erro: {response.text}")
+            print(f"[EMAIL]Erro: {response.text}")
             return False
     except Exception as e:
-        print(f"[EMAIL] Erro na API: {e}")
+        print(f"[EMAIL]Erro na API: {e}")
         return False
