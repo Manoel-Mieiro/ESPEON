@@ -2,9 +2,11 @@ from flask import jsonify, Blueprint, request
 import app.controllers.login as loginController
 import app.controllers.users as userController
 from app.utils.logger import auth_logger, api_logger
+from app.swagger.login import register_swagger_routes
 
 login_bp = Blueprint("login", __name__)
 
+login_ns = register_swagger_routes()
 
 def resolve_user_id(email: str):
     """Busca o user_id a partir do email"""
@@ -48,7 +50,6 @@ def patch_token():
             'error': str(e)
         })
         return jsonify({"error": str(e)}), 500
-
 
 @login_bp.route("/login/token", methods=["GET"])
 def get_token():

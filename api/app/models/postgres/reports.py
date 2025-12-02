@@ -14,7 +14,7 @@ class Report:
         date_lecture: datetime = None,
         total_students: int = 0,
 
-        real_total_session_duration: float = None,
+        lecture_length: float = None,
         avg_session_per_student: float = None,
         attendance_ratio: float = None,
 
@@ -42,11 +42,6 @@ class Report:
         attention_health: float = None,
         distraction_risk: float = None,
 
-        avg_cam_streaming_span: float = None,
-        avg_mic_streaming_span: float = None,
-        min_lecture_duration: float = None,
-        max_lecture_duration: float = None,
-
         issued_at: datetime = None,
         _id: ObjectId = None
     ):
@@ -59,7 +54,7 @@ class Report:
         self._date_lecture = date_lecture or datetime.utcnow()
         self._total_students = total_students
 
-        self._real_total_session_duration = real_total_session_duration
+        self._lecture_length = lecture_length
         self._avg_session_per_student = avg_session_per_student
         self._attendance_ratio = attendance_ratio
 
@@ -93,11 +88,6 @@ class Report:
         self._attention_health = attention_health
         self._distraction_risk = distraction_risk
 
-        self._avg_cam_streaming_span = avg_cam_streaming_span
-        self._avg_mic_streaming_span = avg_mic_streaming_span
-        self._min_lecture_duration = min_lecture_duration
-        self._max_lecture_duration = max_lecture_duration
-
         self._issued_at = issued_at or get_current_datetime()
 
     def to_dict(self):
@@ -118,7 +108,7 @@ class Report:
             "date_lecture": format_date(self._date_lecture, "%d/%m/%Y"),
             "total_students": self._total_students,
 
-            "real_total_session_duration": self._real_total_session_duration,
+            "lecture_length": self._lecture_length,
             "avg_session_per_student": self._avg_session_per_student,
             "attendance_ratio": self._attendance_ratio,
 
@@ -146,11 +136,6 @@ class Report:
             "attention_health": self._attention_health,
             "distraction_risk": self._distraction_risk,
 
-            "avg_cam_streaming_span": self._avg_cam_streaming_span,
-            "avg_mic_streaming_span": self._avg_mic_streaming_span,
-            "min_lecture_duration": self._min_lecture_duration,
-            "max_lecture_duration": self._max_lecture_duration,
-
             "issued_at": format_date(self._issued_at),
         }
 
@@ -161,7 +146,9 @@ class Report:
 
     @staticmethod
     def from_dict(data):
+        _id = data.get('report_id') or data.get('_id')
         return Report(
+             _id=_id,
             lecture_id=data["lecture_id"],
             subject_id=data["subject_id"],
             lecture_alias=data["lecture_alias"],
@@ -188,11 +175,6 @@ class Report:
             engagement_score=data.get("engagement_score"),
             attention_health=data.get("attention_health"),
             distraction_risk=data.get("distraction_risk"),
-
-            avg_cam_streaming_span=data.get("avg_cam_streaming_span"),
-            avg_mic_streaming_span=data.get("avg_mic_streaming_span"),
-            min_lecture_duration=data.get("min_lecture_duration"),
-            max_lecture_duration=data.get("max_lecture_duration"),
 
             issued_at=data.get("issued_at"),
         )

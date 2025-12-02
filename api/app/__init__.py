@@ -1,17 +1,39 @@
 from flask import Flask, request, g
+from flask_restx import Api
 import time
 import os
 from app.utils.logger import app_logger, api_logger
-from app.routes.traces import traces_bp
-from app.routes.users import users_bp
-from app.routes.login import login_bp
-from app.routes.lectures import lectures_bp
-from app.routes.subject import subjects_bp
-from app.routes.reports import report_bp
+from app.routes.traces import traces_bp, traces_ns
+from app.routes.users import users_bp, users_ns
+from app.routes.login import login_bp, login_ns
+from app.routes.lectures import lectures_bp, lectures_ns
+from app.routes.subject import subjects_bp, subjects_ns
+from app.routes.reports import report_bp, report_ns
 from app.routes.reportsStudent import report_student_bp
 
 def create_app():
     app = Flask(__name__)
+    
+    # Configurar Swagger API
+    api = Api(
+        app,
+        version='1.0',
+        title='ESPEON API',
+        description='API para análise de atenção e engajamento em aulas online',
+        doc='/docs/',  
+        prefix='/api/v1',
+        contact='Manoel Mieiro',
+        contact_email='17733635730@cefet-rj.br'
+    )
+    
+    
+    
+    api.add_namespace(report_ns, path='/reports')   
+    api.add_namespace(login_ns, path='/auth') 
+    api.add_namespace(subjects_ns, path='/subjects') 
+    api.add_namespace(traces_ns, path='/traces') 
+    api.add_namespace(lectures_ns, path='/lectures') 
+    api.add_namespace(users_ns, path='/users') 
     
     app_logger.startup("Inicializando aplicação Flask", {
         'port': os.getenv('FLASK_RUN_PORT'),
@@ -19,7 +41,9 @@ def create_app():
         'hosting': os.getenv('HOSTING'),
         'database_url_configured': bool(os.getenv('DATABASE_URL')),
         'mongo_configured': bool(os.getenv('MONGO_URI')),
-        'blueprints_count': 7
+        'blueprints_count': 7,
+        'swagger_enabled': True,
+        'swagger_url': '/docs/'
     })
     
     @app.before_request
@@ -74,6 +98,9 @@ def create_app():
             'subjects_bp',
             'report_bp',
             'report_student_bp'
+        ],
+        'swagger_namespaces': [
+            'report_ns'
         ]
     })
     

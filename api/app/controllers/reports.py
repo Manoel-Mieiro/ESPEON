@@ -27,8 +27,6 @@ def createReport(data):
             lecture_id=data["lecture_id"],
             subject_id=subject_id,
             total_students=data.get("total_students", 0),
-            avg_cam_streaming_span=data.get("avg_cam_streaming_span"),
-            avg_mic_streaming_span=data.get("avg_mic_streaming_span")
         )
         report = rep_dto.to_standard()
         return reportsService.createReport(report)
