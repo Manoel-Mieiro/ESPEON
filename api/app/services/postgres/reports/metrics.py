@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from flask import jsonify
-from app.services.postgres.lectures import findLecturesBySubject
+from app.services.postgres.lectures import findOneLecture
 import requests
 import os
 
@@ -46,7 +46,7 @@ def calculateTotalTimeWatched(lecture_id):
         print(
             f"[SERVICE] Calculando total_time_watched para lecture_id={lecture_id}")
 
-        lectures = findLecturesBySubject(lecture_id)
+        lectures = findOneLecture(lecture_id)
         
         if not lectures or len(lectures) == 0:
             raise ValueError(f"Aula {lecture_id} não encontrada")
