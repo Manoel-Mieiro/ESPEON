@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+
+from flask import jsonify
+from app.services.postgres.lectures import findLecturesBySubject
 import requests
 import os
 
@@ -43,11 +46,10 @@ def calculateTotalTimeWatched(lecture_id):
         print(
             f"[SERVICE] Calculando total_time_watched para lecture_id={lecture_id}")
 
-        base_url = f"http://localhost:{flask_port}/lectures/{lecture_id}"
-        response = requests.get(base_url)
-        response.raise_for_status()
-
-        lecture = response.json()
+        lecture = findLecturesBySubject(lecture_id)
+        
+        if not lecture:
+            return jsonify({"error": f"Aula {lecture_id} não encontrada"}), 404
 
         if not lecture:
             raise ValueError(f"Aula {lecture_id} não encontrada.")
