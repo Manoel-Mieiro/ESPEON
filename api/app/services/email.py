@@ -1,27 +1,37 @@
+import requests
 import os
 from dotenv import load_dotenv
-import smtplib
-from email.message import EmailMessage
-
 
 def sendMail(who, token):
     load_dotenv("mail.env")
-    server = os.getenv("SERVER")
-    psw = os.getenv("PSW")
-
-    msg = EmailMessage()
-    msg.set_content(
-        f"Aqui está seu código de acesso: {token}"
-    )
-
-    msg['Subject'] = 'Código de Acesso - ESPEON'
-    msg['From'] = server
-    msg['To'] = who
-
+    
+    api_key = os.getenv("RESEND_API_KEY")
+    
+    data = {
+        "from": "onboarding@resend.dev",  
+        "to": who,
+        "subject": "Código de Acesso - ESPEON",
+        "html": f"<p>Aqui está seu código de acesso: <strong>{token}</strong></p>",
+        "text": f"Aqui está seu código de acesso: {token}"
+    }
+    
     try:
-        s = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        s.login(server, psw)
-        s.send_message(msg)
-        s.quit
+        response = requests.post(
+            "https://api.resend.com/emails",
+            json=data,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            print(f"[EMAIL] Enviado para {who}")
+            return True
+        else:
+            print(f"[EMAIL] Erro: {response.text}")
+            return False
     except Exception as e:
-        print("[EMAIL] Erro ao enviar e-mail:", e)
+        print(f"[EMAIL] Erro na API: {e}")
+        return False
