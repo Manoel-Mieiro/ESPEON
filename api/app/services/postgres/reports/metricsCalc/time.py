@@ -264,8 +264,8 @@ def calculate_dropoff_point(traces, lecture_id):
         # Obtém os períodos E A DATA REAL da aula
         lecture_data = findOneLecture(lecture_id)
         if not lecture_data:
-            print("[DEBUG] Aula não encontrada, retornando N/A")
-            return "N/A"
+            print("[DEBUG] Aula não encontrada, retornando None")
+            return None  # <-- MUDAR DE "N/A" PARA None
         
         date_lecture = lecture_data.get("date_lecture")
         period_start = lecture_data.get("period_start")
@@ -274,12 +274,16 @@ def calculate_dropoff_point(traces, lecture_id):
         print(f"[DEBUG] Data da aula: {date_lecture}, Horário: {period_start} às {period_end}")
         
         if not date_lecture or not period_start or not period_end:
-            print("[DEBUG] Dados da aula incompletos, retornando N/A")
-            return "N/A"
+            print("[DEBUG] Dados da aula incompletos, retornando None")
+            return None  # <-- MUDAR DE "N/A" PARA None
         
         # Cria datetime REAL para início e fim da aula
-        start_dt = datetime.strptime(f"{date_lecture} {period_start}", "%Y-%m-%d %H:%M:%S")
-        end_dt = datetime.strptime(f"{date_lecture} {period_end}", "%Y-%m-%d %H:%M:%S")
+        try:
+            start_dt = datetime.strptime(f"{date_lecture} {period_start}", "%Y-%m-%d %H:%M:%S")
+            end_dt = datetime.strptime(f"{date_lecture} {period_end}", "%Y-%m-%d %H:%M:%S")
+        except Exception as e:
+            print(f"[DEBUG] Erro ao parse datas: {e}")
+            return None  # <-- MUDAR DE "N/A" PARA None
         
         # Ajuste se a aula terminar depois da meia-noite
         if end_dt < start_dt:
@@ -291,10 +295,15 @@ def calculate_dropoff_point(traces, lecture_id):
         lecture_duration = (end_dt - start_dt).total_seconds() / 60
         
         if lecture_duration <= 0:
-            print(f"[DEBUG] Duração da aula <= 0: {lecture_duration}, retornando N/A")
-            return "N/A"
+            print(f"[DEBUG] Duração da aula <= 0: {lecture_duration}, retornando None")
+            return None  # <-- MUDAR DE "N/A" PARA None
         
         print(f"[DEBUG] Duração da aula: {lecture_duration} minutos")
+        
+        # Verifica se há traces
+        if not traces or len(traces) == 0:
+            print("[DEBUG] Sem traces para processar, retornando None")
+            return None  # <-- MUDAR DE "N/A" PARA None
         
         # Calcula engajamento por intervalos de 5 minutos
         engagement_by_time = {}
@@ -314,11 +323,14 @@ def calculate_dropoff_point(traces, lecture_id):
                 curr_trace.get('timestamp')
             )
             
-            if time_diff <= 0:
+            if time_diff is None or time_diff <= 0:
                 continue
             
             # CORREÇÃO: Usa a data real da aula para converter o timestamp do trace
             trace_time_str = prev_trace.get('timestamp')
+            if not trace_time_str:
+                continue
+                
             try:
                 trace_dt = datetime.strptime(f"{date_lecture} {trace_time_str}", "%Y-%m-%d %H:%M:%S")
             except Exception as e:
@@ -356,8 +368,8 @@ def calculate_dropoff_point(traces, lecture_id):
                 print(f"[DEBUG] Intervalo {interval}min: focus={data['focus']:.2f}, total={data['total']:.2f}, ratio={engagement_ratios[interval]:.3f}")
         
         if not engagement_ratios:
-            print("[DEBUG] Nenhum intervalo com dados, retornando N/A")
-            return "N/A"
+            print("[DEBUG] Nenhum intervalo com dados, retornando None")
+            return None  # <-- MUDAR DE "N/A" PARA None
         
         # Encontra o pico de engajamento
         peak_engagement = max(engagement_ratios.values())
@@ -407,11 +419,11 @@ def calculate_dropoff_point(traces, lecture_id):
             print(f"[SERVICE] dropoff_point: {dropoff_time} (aos {dropoff_minute:.0f} minutos)")
             return dropoff_time
         else:
-            print("[DEBUG] Nenhum dropoff point encontrado")
-            return "N/A"
+            print("[DEBUG] Nenhum dropoff point encontrado, retornando None")
+            return None
             
     except Exception as e:
         print(f"[SERVICE] Erro ao calcular dropoff_point: {e}")
         import traceback
         print(f"[SERVICE] Traceback: {traceback.format_exc()}")
-        return "N/A"
+        return None  
