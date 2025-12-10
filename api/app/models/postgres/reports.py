@@ -1,5 +1,5 @@
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime, date
 from app.utils.time_utils import get_current_datetime
 
 
@@ -51,7 +51,7 @@ class Report:
         self._lecture_alias = lecture_alias
         self._subject_name = subject_name
         self._teacher = teacher
-        self._date_lecture = date_lecture or datetime.utcnow()
+        self._date_lecture = parse_date(date_lecture)
         self._total_students = total_students
 
         self._lecture_length = lecture_length
@@ -178,3 +178,21 @@ class Report:
 
             issued_at=data.get("issued_at"),
         )
+
+def parse_date(value):
+    if value is None:
+        return datetime.utcnow()
+
+    if isinstance(value, datetime):
+        return value
+
+    if isinstance(value, date):
+        return datetime.combine(value, datetime.min.time())
+
+    if isinstance(value, str):
+        try:
+            return datetime.strptime(value, "%Y-%m-%d")
+        except:
+            pass
+
+    return datetime.utcnow()
